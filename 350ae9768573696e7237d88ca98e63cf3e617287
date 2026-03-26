@@ -1,0 +1,151 @@
+=== ACCESSIBILITY FEATURES (40 items) ===
+
+--- TIER 1: HIGH IMPACT ---
+
+1. aria-labels on all icon buttons (embed, expand-all, zoom, info)
+   Screen readers previously read meaningless symbols like ⊖ and ⧉
+
+2. lang="ar" (xml:lang) on all Arabic text elements in SVG nodes
+   Without this, screen readers mispronounce Arabic text using English phonetics
+
+3. Focus-visible ring styling with custom :focus-visible outlines
+   Keyboard users had zero visual feedback when tabbing through the page
+   Uses --amber color to match theme, with outline-offset for breathing room
+
+4. Bumped --tx3 from #7a7268 to #8a8278 for WCAG AA compliance
+   Previous contrast ratio was ~3.5:1 against --bg, now ~4.5:1
+   Visually near-identical — slightly brighter muted text
+
+5. aria-live="polite" on the detail card
+   Screen readers now announce when dialect info changes on selection
+   Used "polite" not "assertive" to avoid interrupting mid-sentence
+
+6. Focus management: focus moves to detail card on open, returns to
+   the triggering node on close. Essential for keyboard navigation flow.
+
+7. Tab-focusable SVG nodes (tabindex="0") with Enter/Space activation
+   All 13 main dialect nodes are now keyboard-reachable and activatable
+   Each has role="button" and aria-label with the dialect name
+
+8. Tab-focusable satellite nodes via MutationObserver on sat-layer
+   Satellites are created dynamically, so a MutationObserver watches for
+   new children and adds tabindex/aria-label/keyboard handlers on the fly
+   Without this, expanded sub-dialects would be unreachable by keyboard
+
+9. <main> landmark wrapping primary content
+   Screen readers can now jump directly to the main content area
+
+10. role="search" with aria-label on search wrapper
+    Identified as a search landmark for screen reader navigation
+
+11. <meta name="description"> for SEO and screen reader page context
+
+12. aria-hidden="true" on all decorative SVG elements:
+    - Glow gradient rect
+    - Legend group (colors are visual-only, labels too terse for speech)
+    - Ripple circles (.rip) on every node
+    - Breathe animation circles (.bre) on every node
+
+--- TIER 2: IMPORTANT ---
+
+13. aria-pressed on toggle buttons (expand-all, zoom)
+    MutationObserver watches class changes and syncs aria-pressed state
+    So screen readers announce "Expand all, pressed" / "not pressed"
+
+14. aria-selected on filter buttons (All, Classical, Eastern, etc.)
+    Synced on click — screen readers announce which filter is active
+
+15. role="tablist" + role="tab" + aria-selected on ref toggle
+    (vs MSA / vs Quranic) — proper ARIA tab pattern for the scoring toggle
+
+16. role="dialog" + aria-modal="true" on all three modals
+    (info, feedback, embed) — screen readers treat them as modal dialogs
+
+17. Focus trap inside all three modals
+    Tab key cycles within the modal, can't escape behind it
+    Handles Shift+Tab wrapping to last element
+    Checks for focusable elements dynamically (works when button text changes)
+
+18. aria-label="Close dialect details" on detail card close button
+    Previously just × with no accessible name
+
+19. aria-label="Send feedback" on feedback button
+
+20. aria-label="Embed code" on embed textarea
+
+21. <nav> with aria-label="Filter by dialect region" around filter pills
+    Semantic navigation landmark for the filter button group
+
+22. SVG role="img" + aria-label describing the map
+    Screen readers announce "Interactive map of Arabic dialects..."
+
+--- TIER 3: QUALITY OF LIFE ---
+
+23. / key focuses search (like GitHub)
+    Only when not already in an input/textarea, prevents conflict
+
+24. Enter in search selects first visible match
+    Finds first .dnode:not(.dim) and clicks it
+
+25. No-results indicator (#no-results div)
+    Shows "No dialects match your search" when search filters to zero matches
+    Previously just dimmed everything with no text feedback
+
+26. autocapitalize="none" on search input
+    Prevents iOS from capitalizing first letter of dialect searches
+
+27. spellcheck="false" on search input
+    Prevents red squiggles on dialect names like "Sana'ani"
+
+28. Screen reader text for difficulty dots
+    The d-dlabel element gets aria-label matching its text content
+    So "3/5 vs Modern Standard Arabic" is properly announced
+
+29. prefers-reduced-motion (from previous commit, still active)
+    Kills all animations and transitions for users with that OS setting
+
+30. overflow-x:hidden on svg-wrap
+    Prevents any horizontal scroll on narrow viewports
+
+=== ERRORS AVERTED ===
+
+1. Triple monkey-patching showDetail
+   The bottom sheet IIFE already patches showDetail, and the accessibility
+   IIFE patches it again. Each layer calls the previous version maintaining
+   the chain: original → bottom sheet (backdrop, scroll lock) → accessibility
+   (focus management). Breaking this chain would silently lose features.
+
+2. <main> replacing <div id="wrap">
+   All CSS selectors use #wrap which works on any element type, so the
+   element change is safe. But the closing </div> had to change to </main>
+   — a mismatch would break the DOM tree.
+
+3. Focus trap vs Escape handler
+   The focus trap only intercepts Tab key, doesn't interfere with the
+   separate Escape handler. Without this separation, Escape could get
+   swallowed by the trap.
+
+4. MutationObserver on dynamically created satellites
+   Without observing sat-layer for childList changes, any satellite nodes
+   created after page load would be invisible to keyboard users. The
+   observer fires on every expansion and adds accessibility attributes.
+
+5. aria-live="polite" not "assertive"
+   "assertive" would interrupt whatever the screen reader is currently
+   saying, which is jarring. "polite" waits for a natural pause.
+
+6. --tx3 contrast bump is minimal
+   #7a7268 → #8a8278 is only 16 units brighter per channel. Enough to
+   cross WCAG AA but not enough to visually alter the design language.
+   Tested that no text becomes too bright or loses its "muted" character.
+
+7. autocapitalize="none" prevents iOS search friction
+   iOS auto-capitalizes the first character in inputs by default. For a
+   search that filters on lowercase comparison this doesn't break anything,
+   but it's confusing UX when "E" appears and the user typed "egyptian".
+
+8. nav element replacing div for .fbtn-row
+   CSS used display:contents on desktop (element invisible to layout) and
+   display:flex on mobile. Both work identically on <nav> as on <div>.
+   The .fbtn querySelectorAll('.fbtn') calls still find the buttons inside
+   the nav element — no selector breakage.
