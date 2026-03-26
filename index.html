@@ -23,6 +23,74 @@
   --blue:#68a8d8;--blue-d:#1c2e3e;
   --rose:#c88098;--rose-d:#381828;
 }
+html.light{
+  --bg:#f4f1ec;--bg2:#eae5dd;--bg3:#ddd7cd;
+  --card:#ffffff;--card-b:#c8c0b4;
+  --tx:#1a1814;--tx2:#48423a;--tx3:#6a6258;
+  --purple:#6a4cb0;--purple-d:#ede8f8;
+  --green:#1a7848;--green-d:#daf2e6;
+  --amber:#8a6810;--amber-d:#f8ecd4;
+  --coral:#983820;--coral-d:#f8dad0;
+  --blue:#28608c;--blue-d:#d6e6f6;
+  --rose:#903858;--rose-d:#f6d2e2;
+}
+html.light body{background:var(--bg)}
+html.light #svg-wrap::after{opacity:.03}
+html.light #svg-wrap{border-color:var(--card-b);background:var(--bg2)}
+html.light #info-overlay,html.light #feedback-overlay,html.light #embed-overlay{background:rgba(0,0,0,.35)}
+html.light .dline{opacity:.55!important}
+html.light #expand-all-btn.on{color:#fff}
+html.light #zoom-btn.on{color:#fff}
+html.light .fbtn.on{background:var(--tx);color:var(--bg)}
+html.light #detail{border-color:var(--card-b);box-shadow:0 -2px 20px rgba(0,0,0,.08)}
+html.light .axis-track{background:#d0c8bc}
+html.light #search-input{background:var(--card);border-color:var(--card-b)}
+html.light #search-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(138,104,16,.12)}
+html.light #feedback-btn{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.1)}
+html.light .ref-btn.on{background:var(--tx3);color:#fff}
+html.light .d-badge{opacity:.9}
+html.light .sat rect{opacity:.92}
+/* SVG text — override inline fill attrs for light mode */
+html.light .dnode text{fill:var(--tx)!important}
+html.light #n-fusha text:first-of-type{fill:var(--purple)!important}
+html.light #n-fusha text:nth-of-type(2){fill:var(--purple)!important}
+html.light #n-fusha text:nth-of-type(3){fill:var(--tx3)!important}
+html.light #n-quranic text:first-of-type{fill:var(--purple)!important}
+html.light #n-quranic text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-egyptian text:first-of-type{fill:var(--green)!important}
+html.light #n-egyptian text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-levantine text:first-of-type{fill:var(--green)!important}
+html.light #n-levantine text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-iraqi text:first-of-type{fill:var(--blue)!important}
+html.light #n-iraqi text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-gulf text:first-of-type{fill:var(--amber)!important}
+html.light #n-gulf text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-yemeni text:first-of-type{fill:var(--amber)!important}
+html.light #n-yemeni text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-sudanese text:first-of-type{fill:var(--rose)!important}
+html.light #n-sudanese text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-libyan text:first-of-type{fill:var(--coral)!important}
+html.light #n-libyan text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-tunisian text:first-of-type{fill:var(--coral)!important}
+html.light #n-tunisian text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-algerian text:first-of-type{fill:var(--coral)!important}
+html.light #n-algerian text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-moroccan text:first-of-type{fill:var(--coral)!important}
+html.light #n-moroccan text:nth-of-type(2){fill:var(--tx3)!important}
+html.light #n-hassaniya text:first-of-type{fill:var(--coral)!important}
+html.light #n-hassaniya text:nth-of-type(2){fill:var(--tx3)!important}
+html.light .expand-plus{fill:var(--tx3)!important}
+html.light .sat text{fill:var(--tx2)!important}
+html.light .dnode rect{stroke-width:1.5}
+html.light .intel-dot{border:1px solid rgba(0,0,0,.1)}
+html.light g[aria-hidden="true"]{opacity:1!important}
+html.light g[aria-hidden="true"] text{fill:var(--tx2)!important}
+html.light g[aria-hidden="true"] circle[fill="#8070b8"]{fill:var(--purple)}
+html.light g[aria-hidden="true"] circle[fill="#5caa84"]{fill:var(--green)}
+html.light g[aria-hidden="true"] circle[fill="#5090c0"]{fill:var(--blue)}
+html.light g[aria-hidden="true"] circle[fill="#b89848"]{fill:var(--amber)}
+html.light g[aria-hidden="true"] circle[fill="#b07088"]{fill:var(--rose)}
+html.light g[aria-hidden="true"] circle[fill="#a86048"]{fill:var(--coral)}
 html,body{background:var(--bg);color:var(--tx);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 #wrap{position:relative;width:100%;max-width:900px;margin:0 auto;font-family:var(--font);user-select:none;padding:24px 20px 28px}
 
@@ -166,6 +234,15 @@ html,body{background:var(--bg);color:var(--tx);-webkit-text-size-adjust:100%;-we
 #hint{text-align:center;font-size:12px;color:var(--tx3);padding:10px 0 4px;transition:opacity .3s;letter-spacing:.3px}
 #hint.hid{opacity:0;height:0;padding:0;overflow:hidden}
 
+#theme-btn{
+  position:absolute;top:24px;right:164px;z-index:30;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--card-b);
+  color:var(--tx3);font-size:14px;font-family:var(--font);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;line-height:1;
+}
+#theme-btn:hover{color:var(--tx);border-color:var(--tx3)}
 #embed-btn{
   position:absolute;top:24px;right:128px;z-index:30;
   width:28px;height:28px;border-radius:50%;
@@ -252,6 +329,7 @@ button:focus-visible{outline-offset:1px}
   #title-area h1{font-size:18px}
   #title-area p{font-size:10px}
   #embed-btn{display:none}
+  #theme-btn{right:112px;top:16px;width:30px;height:30px;font-size:15px}
   #expand-all-btn{right:78px;top:16px;width:30px;height:30px;font-size:14px}
   #zoom-btn{right:42px;top:16px;width:30px;height:30px;font-size:14px}
   #info-btn{right:6px;top:16px;width:30px;height:30px;font-size:13px}
@@ -336,9 +414,10 @@ button:focus-visible{outline-offset:1px}
   #title-area h1{font-size:16px}
   #title-area p{display:none}
   #title-area{padding-right:90px}
-  #expand-all-btn{right:70px}
+  #theme-btn{right:100px}
+  #expand-all-btn{right:68px}
   #zoom-btn{right:36px}
-  #info-btn{right:2px}
+  #info-btn{right:4px}
 }
 @media(max-width:640px) and (orientation:landscape){
   #detail.open{max-height:85vh}
@@ -358,6 +437,7 @@ button:focus-visible{outline-offset:1px}
 <body>
 
 <main id="wrap">
+<button id="theme-btn" title="Toggle light/dark mode" aria-label="Toggle light or dark mode" aria-pressed="false">&#x263E;</button>
 <button id="embed-btn" title="Embed this map" aria-label="Embed this map">&lt;/&gt;</button>
 <button id="expand-all-btn" title="Expand / collapse all sub-dialects" aria-label="Expand all sub-dialects" aria-pressed="false">&#x29C9;</button>
 <button id="zoom-btn" class="on" title="Toggle auto-zoom on click" aria-label="Toggle auto-zoom" aria-pressed="true">&#x2296;</button>
@@ -535,7 +615,7 @@ button:focus-visible{outline-offset:1px}
 </g>
 
 <!-- Legend -->
-<g opacity=".5" aria-hidden="true">
+<g opacity=".75" aria-hidden="true">
   <circle cx="858" cy="618" r="4" fill="#8070b8"/><text x="868" y="621" font-size="9" fill="#7a7268" font-family="var(--font)">Classical</text>
   <circle cx="858" cy="634" r="4" fill="#5caa84"/><text x="868" y="637" font-size="9" fill="#7a7268" font-family="var(--font)">Egyptian + Levantine</text>
   <circle cx="858" cy="650" r="4" fill="#5090c0"/><text x="868" y="653" font-size="9" fill="#7a7268" font-family="var(--font)">Iraqi</text>
@@ -1210,6 +1290,23 @@ svg.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')zoomReset()});
 document.getElementById('d-close').addEventListener('click',()=>zoomReset());
+
+/* ── Theme toggle ── */
+(function(){
+  const btn=document.getElementById('theme-btn');
+  const meta=document.querySelector('meta[name="theme-color"]');
+  function setTheme(light){
+    document.documentElement.classList.toggle('light',light);
+    btn.innerHTML=light?'&#x2600;':'&#x263E;';
+    btn.setAttribute('aria-pressed',light);
+    if(meta)meta.content=light?'#f5f0e8':'#1c1a17';
+    try{localStorage.setItem('theme',light?'light':'dark')}catch(e){}
+  }
+  // Load saved preference, default dark
+  const saved=localStorage.getItem('theme');
+  if(saved==='light')setTheme(true);
+  btn.addEventListener('click',()=>setTheme(!document.documentElement.classList.contains('light')));
+})();
 
 /* ── Iframe detection — hide search, feedback, embed btn when embedded ── */
 if(window.self!==window.top)document.body.classList.add('in-iframe');
