@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c1a17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Arabic Dialect Map</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+  --ar:'Noto Naskh Arabic','Geeza Pro','Traditional Arabic','Arabic Typesetting','Amiri',serif;
+  --bg:#1c1a17;--bg2:#242220;--bg3:#2e2b28;
+  --card:#282522;--card-b:#3a3632;
+  --tx:#e8e0d4;--tx2:#b0a898;--tx3:#7a7268;
+  --purple:#b4a0e8;--purple-d:#3a3050;
+  --green:#7cc8a0;--green-d:#263830;
+  --amber:#d4aa60;--amber-d:#38301c;
+  --coral:#c87860;--coral-d:#382420;
+  --blue:#68a8d8;--blue-d:#1c2e3e;
+  --rose:#c88098;--rose-d:#381828;
+}
+html,body{background:var(--bg);color:var(--tx);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+#wrap{position:relative;width:100%;max-width:900px;margin:0 auto;font-family:var(--font);user-select:none;padding:24px 20px 28px}
+
+#expand-all-btn{
+  position:absolute;top:24px;right:92px;z-index:30;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--card-b);
+  color:var(--tx3);font-size:14px;font-family:var(--font);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;line-height:1;
+}
+#expand-all-btn:hover{color:var(--tx);border-color:var(--tx3)}
+#expand-all-btn.on{background:var(--purple);border-color:var(--purple);color:var(--bg)}
+#zoom-btn{
+  position:absolute;top:24px;right:56px;z-index:30;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--card-b);
+  color:var(--tx3);font-size:14px;font-family:var(--font);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;line-height:1;
+}
+#zoom-btn:hover{color:var(--tx);border-color:var(--tx3)}
+#zoom-btn.on{background:var(--amber);border-color:var(--amber);color:var(--bg)}
+
+#info-btn{position:absolute;top:24px;right:20px;z-index:30;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--card-b);color:var(--tx3);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#info-btn:hover{color:var(--tx);border-color:var(--tx3)}
+#info-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+#info-overlay.open{display:flex}
+#info-modal{background:var(--card);border:1px solid var(--card-b);border-radius:16px;padding:24px 28px;max-width:440px;width:90%;max-height:80vh;overflow-y:auto}
+#info-modal h3{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:12px}
+#info-modal p{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:10px}
+.cm{margin-top:8px;padding:8px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--card-b);color:var(--tx2);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .15s}
+.cm:hover{color:var(--tx);border-color:var(--tx3)}
+
+#title-area{text-align:center;margin-bottom:18px;padding-right:36px}
+#title-area h1{font-size:22px;font-weight:700;color:var(--tx);letter-spacing:-.4px;margin-bottom:3px}
+#title-area p{font-size:11.5px;color:var(--tx3);letter-spacing:.2px}
+
+#controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
+.search-wrap{position:relative;flex:1;min-width:180px}
+#search-input{width:100%;padding:9px 32px 9px 14px;background:var(--bg3);border:1px solid var(--card-b);border-radius:10px;color:var(--tx);font-size:13px;font-family:var(--font);outline:none;transition:border-color .2s,box-shadow .2s}
+#search-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(212,170,96,.15)}
+#search-input::placeholder{color:var(--tx3)}
+#search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--tx3);display:none}
+.fbtn{padding:7px 13px;border-radius:8px;background:transparent;border:1px solid var(--card-b);color:var(--tx3);font-size:11.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .2s;white-space:nowrap}
+.fbtn:hover{border-color:var(--tx3);color:var(--tx2)}
+.fbtn.on{background:var(--tx);border-color:var(--tx);color:var(--bg)}
+
+#svg-wrap{background:var(--bg2);border:1px solid var(--card-b);border-radius:18px;padding:6px;margin-bottom:14px;overflow:hidden;position:relative}
+#cv{transition:all .45s cubic-bezier(.4,0,.2,1)}
+#svg-wrap::after{content:'';position:absolute;inset:0;border-radius:18px;opacity:.3;mix-blend-mode:overlay;pointer-events:none;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px}
+
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(1);opacity:0}}
+@keyframes breathe{0%,100%{transform:scale(0);opacity:.25}50%{transform:scale(1);opacity:0}}
+@keyframes dashflow{to{stroke-dashoffset:-20}}
+@keyframes dashflow-up{to{stroke-dashoffset:20}}
+@keyframes nodeIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce{0%{transform:scale(1)}35%{transform:scale(.94)}100%{transform:scale(1)}}
+@keyframes satIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+
+.dnode{cursor:pointer;transform-box:fill-box;-webkit-transform-box:fill-box;transform-origin:center;animation:nodeIn .5s ease both;touch-action:manipulation}
+.dnode text{pointer-events:none}
+.dnode:hover rect:first-of-type{filter:brightness(1.18)}
+.dnode.dim{opacity:.1;pointer-events:none;transition:opacity .35s}
+.dnode:not(.dim){transition:opacity .35s}
+.dnode.sel rect:first-of-type{filter:brightness(1.25)!important}
+.dnode.pop rect:first-of-type{animation:bounce .15s ease;transform-box:fill-box;-webkit-transform-box:fill-box;transform-origin:center}
+
+.sat{cursor:pointer;transform-box:fill-box;-webkit-transform-box:fill-box;transform-origin:center;animation:satIn .3s ease both;touch-action:manipulation}
+.sat text{pointer-events:none}
+.sat:hover rect{filter:brightness(1.18)}
+.sat.sel rect{filter:brightness(1.3)!important}
+.sat-line{stroke-linecap:round;opacity:.3;fill:none;animation:satIn .25s ease both}
+.sat-line.on{stroke-dasharray:4 4;animation:satIn .25s ease both,dashflow .9s linear infinite;opacity:.75}
+
+.dline{stroke-linecap:round;transition:stroke-width .3s,opacity .3s;fill:none}
+.dline.on{stroke-dasharray:6 5;animation:dashflow .9s linear infinite}
+#l-quranic.on{animation:dashflow-up .9s linear infinite}
+.dline.dim{opacity:.04!important;transition:opacity .35s}
+
+.rip,.bre{pointer-events:none;transform-box:fill-box;-webkit-transform-box:fill-box;transform-origin:center;transform:scale(0);will-change:transform,opacity}
+.rip.go{animation:ripple .5s ease-out forwards}
+.bre{animation:breathe 3.5s ease-in-out infinite}
+
+.expand-plus{pointer-events:none;font-family:var(--font);font-weight:600}
+
+#detail{background:var(--card);border:1px solid var(--card-b);border-radius:16px;overflow:hidden;max-height:0;opacity:0;transition:max-height .4s cubic-bezier(.4,0,.2,1),opacity .3s,padding .4s}
+#detail.open{max-height:650px;opacity:1;padding:22px 24px 20px}
+#d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px}
+#d-left{flex:1}
+#d-arabic{font-size:26px;font-family:var(--ar);font-weight:600;color:var(--tx);direction:rtl;line-height:1.3}
+#d-name{font-size:13px;font-weight:500;color:var(--tx2);margin-top:2px}
+#d-region{font-size:11px;color:var(--tx3);margin-top:3px}
+#d-close{background:var(--bg3);border:1px solid var(--card-b);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);font-size:15px;transition:all .15s;flex-shrink:0}
+#d-close:hover{background:var(--card-b);color:var(--tx)}
+#d-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0 14px}
+.d-badge{font-size:10.5px;font-weight:500;padding:3px 10px;border-radius:20px}
+.d-dots{display:flex;align-items:center;gap:4px}
+.d-dot{width:10px;height:10px;border-radius:50%;border:2px solid currentColor;background:transparent}
+.d-dot.on{background:currentColor}
+.d-dlabel{font-size:11px;color:var(--tx3);margin-left:3px}
+#d-axes{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;margin-bottom:14px}
+.axis-row{display:flex;align-items:center;gap:8px}
+.axis-name{font-size:10.5px;color:var(--tx3);width:72px;flex-shrink:0;text-align:right}
+.axis-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.axis-fill{height:100%;border-radius:3px;transition:width .4s ease}
+#d-note{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:12px;font-style:italic}
+#d-body{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px}
+#d-phrase{background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+#d-phrase-label{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:500}
+#d-phrase-ar{font-size:20px;font-family:var(--ar);color:var(--tx);direction:rtl;line-height:1.4;margin-bottom:3px}
+#d-phrase-tr{font-size:12px;color:var(--tx2);font-style:italic}
+#d-tip{font-size:12px;color:var(--tx3);line-height:1.6;padding-top:12px;border-top:1px solid var(--card-b)}
+#d-tip b{color:var(--amber);font-weight:500}
+#d-ref{display:flex;gap:5px;margin-bottom:10px}
+.ref-btn{padding:3px 10px;border-radius:20px;background:transparent;border:1px solid var(--card-b);color:var(--tx3);font-size:10.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .2s}
+.ref-btn:hover{border-color:var(--tx3);color:var(--tx2)}
+.ref-btn.on{background:var(--tx3);border-color:var(--tx3);color:var(--bg)}
+#hint{text-align:center;font-size:12px;color:var(--tx3);padding:10px 0 4px;transition:opacity .3s;letter-spacing:.3px}
+#hint.hid{opacity:0;height:0;padding:0;overflow:hidden}
+
+#embed-btn{
+  position:absolute;top:24px;right:128px;z-index:30;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--card-b);
+  color:var(--tx3);font-size:10px;font-weight:600;font-family:var(--font);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;letter-spacing:-.5px;
+}
+#embed-btn:hover{color:var(--tx);border-color:var(--tx3)}
+
+#feedback-btn{
+  position:fixed;bottom:20px;right:20px;z-index:40;
+  display:flex;align-items:center;gap:7px;
+  padding:9px 16px 9px 13px;border-radius:50px;
+  background:var(--card);border:1px solid var(--card-b);
+  color:var(--tx2);font-size:12px;font-weight:500;font-family:var(--font);
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 24px rgba(0,0,0,.45);
+}
+#feedback-btn:hover{color:var(--tx);border-color:var(--tx3);transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,0,0,.55)}
+
+#feedback-overlay,#embed-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center}
+#feedback-overlay.open,#embed-overlay.open{display:flex}
+
+#feedback-modal{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:28px 28px 22px;max-width:440px;width:90%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#feedback-modal h3{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:14px;letter-spacing:-.3px}
+#feedback-modal p{font-size:13.5px;color:var(--tx2);line-height:1.75;margin-bottom:12px}
+#feedback-modal a{color:var(--amber);text-decoration:none;font-weight:500}
+#feedback-modal a:hover{text-decoration:underline}
+
+#embed-modal{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:24px 26px 20px;max-width:500px;width:90%}
+#embed-modal h3{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:6px;letter-spacing:-.3px}
+#embed-modal p{font-size:12.5px;color:var(--tx2);line-height:1.6;margin-bottom:14px}
+#embed-code{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--card-b);border-radius:10px;color:var(--tx2);font-size:11px;font-family:ui-monospace,'SF Mono','Cascadia Mono','Fira Mono',monospace;resize:none;outline:none;line-height:1.55}
+#embed-note{font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.5}
+.em-actions{display:flex;gap:8px;margin-top:14px;align-items:center}
+#embed-copy{padding:8px 18px;border-radius:8px;background:var(--amber-d);border:1px solid var(--amber);color:var(--amber);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .2s;font-weight:600}
+#embed-copy:hover{background:var(--amber);color:var(--bg)}
+#embed-copy.copied{background:var(--green-d);border-color:var(--green);color:var(--green)}
+.modal-close{padding:8px 14px;border-radius:8px;background:transparent;border:1px solid var(--card-b);color:var(--tx3);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .15s}
+.modal-close:hover{border-color:var(--tx3);color:var(--tx2)}
+
+.fbtn-row{display:contents}
+
+body.in-iframe #feedback-btn,
+body.in-iframe .search-wrap,
+body.in-iframe #search-clear,
+body.in-iframe #embed-btn{display:none!important}
+
+@media(max-width:640px){
+  #wrap{padding:16px 12px 82px}
+  #title-area h1{font-size:18px}
+  #title-area p{font-size:10px;padding-right:0}
+  #title-area{padding-right:140px;margin-bottom:12px}
+  #embed-btn{right:112px;top:18px;width:26px;height:26px;font-size:9px}
+  #expand-all-btn{right:80px;top:18px;width:26px;height:26px;font-size:12px}
+  #zoom-btn{right:48px;top:18px;width:26px;height:26px;font-size:12px}
+  #info-btn{right:16px;top:18px;width:26px;height:26px;font-size:11px}
+  #controls{gap:6px;margin-bottom:10px}
+  .search-wrap{flex:none;width:100%;min-width:0}
+  .fbtn-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;width:100%;padding-bottom:2px;scrollbar-width:none}
+  .fbtn-row::-webkit-scrollbar{display:none}
+  .fbtn{flex-shrink:0;font-size:11px;padding:6px 11px}
+  #svg-wrap{border-radius:12px;padding:3px;margin-bottom:10px}
+  #detail.open{padding:16px 14px 16px;max-height:none}
+  #d-arabic{font-size:22px}
+  #d-name{font-size:12px}
+  #d-axes{grid-template-columns:1fr}
+  #d-phrase{padding:10px 12px}
+  #d-body{font-size:12.5px}
+  #d-tip{font-size:11.5px}
+  #d-note{font-size:12.5px}
+  #hint{font-size:11px;padding:6px 0 2px}
+  #feedback-btn{bottom:14px;right:14px;padding:8px 14px 8px 11px;font-size:11.5px}
+  #feedback-modal,#embed-modal{width:92%;border-radius:16px}
+  #feedback-modal{padding:22px 20px 18px}
+  #feedback-modal h3{font-size:15px}
+  #feedback-modal p{font-size:13px}
+  #embed-modal{padding:20px 18px 16px}
+}
+@media(max-width:380px){
+  #title-area h1{font-size:16px}
+  #title-area{padding-right:120px}
+  #embed-btn{display:none}
+  #expand-all-btn{right:64px}
+  #zoom-btn{right:36px}
+  #info-btn{right:8px}
+}
+@supports(padding:env(safe-area-inset-bottom)){
+  #feedback-btn{bottom:calc(20px + env(safe-area-inset-bottom))}
+  @media(max-width:640px){
+    #wrap{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+    #feedback-btn{bottom:calc(14px + env(safe-area-inset-bottom))}
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="wrap">
+<button id="embed-btn" title="Embed this map">&lt;/&gt;</button>
+<button id="expand-all-btn" title="Expand / collapse all sub-dialects">&#x29C9;</button>
+<button id="zoom-btn" class="on" title="Toggle auto-zoom on click">&#x2296;</button>
+<button id="info-btn" title="About this diagram">i</button>
+<div id="info-overlay"><div id="info-modal">
+  <h3>About this diagram</h3>
+  <p>This interactive map shows Arabic dialects arranged by how different they are from Modern Standard Arabic (Fusha) at the center. Larger nodes indicate more widely understood dialects.</p>
+  <p>Nodes with a <b>+</b> indicator contain sub-dialects. Click to expand them.</p>
+  <p><b>Difficulty scores</b> are calibrated for someone who can read Arabic script with harakat from Qurʾanic study and wants to pick up a spoken dialect. Five axes: sound changes, vocabulary overlap, grammar shifts, vowel compression, and foreign language mixing.</p>
+  <p><b>Assumptions:</b> You can read Arabic script. You know English. The baseline is decoding ability with harakat, not comprehension.</p>
+  <button class="cm" onclick="document.getElementById('info-overlay').classList.remove('open')">Got it</button>
+</div></div>
+
+<div id="title-area">
+  <h1>Arabic Dialect Map</h1>
+  <p>Spatial distance from center = divergence from Modern Standard Arabic</p>
+</div>
+
+<div id="controls">
+  <div class="search-wrap">
+    <input id="search-input" type="text" placeholder="Search dialects..." inputmode="search" autocomplete="off">
+    <button id="search-clear" aria-label="Clear">&times;</button>
+  </div>
+  <div class="fbtn-row">
+    <button class="fbtn on" data-f="all">All</button>
+    <button class="fbtn" data-f="classical">Classical</button>
+    <button class="fbtn" data-f="eastern">Eastern</button>
+    <button class="fbtn" data-f="peninsula">Peninsula</button>
+    <button class="fbtn" data-f="maghreb">Maghreb</button>
+  </div>
+</div>
+
+<div id="svg-wrap">
+<svg id="cv" width="100%" viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="glow" cx="480" cy="330" r="360" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#3a3428" stop-opacity=".5"/>
+    <stop offset="100%" stop-color="#242220" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="960" height="720" fill="url(#glow)" rx="12"/>
+
+<g id="lines">
+  <path id="l-quranic"   class="dline" d="M480,380 C480,420 480,460 480,495" stroke="#8070b8" data-sw="3" data-op=".4" style="stroke-width:3;opacity:.4"/>
+  <path id="l-egyptian"  class="dline" d="M480,316 C480,266 480,200 480,141" stroke="#5caa84" data-sw="3" data-op=".45" style="stroke-width:3;opacity:.45"/>
+  <path id="l-levantine" class="dline" d="M462,322 C370,240 285,170 205,114" stroke="#5caa84" data-sw="2.5" data-op=".4" style="stroke-width:2.5;opacity:.4"/>
+  <path id="l-iraqi"     class="dline" d="M502,322 C590,255 675,190 755,141" stroke="#5090c0" data-sw="2" data-op=".4" style="stroke-width:2;opacity:.4"/>
+  <path id="l-gulf"      class="dline" d="M528,355 C625,368 715,380 790,390" stroke="#b89848" data-sw="2" data-op=".35" style="stroke-width:2;opacity:.35"/>
+  <path id="l-yemeni"    class="dline" d="M518,375 C600,440 670,505 725,542" stroke="#b89848" data-sw="1.5" data-op=".3" style="stroke-width:1.5;opacity:.3"/>
+  <path id="l-sudanese"  class="dline" d="M494,385 C535,460 572,555 610,626" stroke="#b07088" data-sw="1.3" data-op=".25" style="stroke-width:1.3;opacity:.25"/>
+  <path id="l-libyan"    class="dline" d="M452,330 C360,285 265,225 170,190" stroke="#a86048" data-sw="1.3" data-op=".25" style="stroke-width:1.3;opacity:.25"/>
+  <path id="l-tunisian"  class="dline" d="M443,348 C340,368 230,384 144,400" stroke="#a86048" data-sw="1.1" data-op=".22" style="stroke-width:1.1;opacity:.22"/>
+  <path id="l-algerian"  class="dline" d="M452,368 C330,430 210,500 124,552" stroke="#a86048" data-sw=".9" data-op=".18" style="stroke-width:.9;opacity:.18"/>
+  <path id="l-moroccan"  class="dline" d="M466,384 C430,480 385,580 358,648" stroke="#a86048" data-sw=".7" data-op=".15" style="stroke-width:.7;opacity:.15"/>
+  <path id="l-hassaniya" class="dline" d="M460,382 C385,448 295,545 220,618" stroke="#a86048" data-sw=".5" data-op=".12" style="stroke-width:.5;opacity:.12"/>
+</g>
+
+<g id="sat-layer"></g>
+
+<!-- FUSHA (center) -->
+<g id="n-fusha" class="dnode" style="animation-delay:.05s" data-key="fusha">
+  <circle class="bre" cx="480" cy="350" r="38" fill="none" stroke="#b4a0e8" stroke-width="1"/>
+  <circle class="rip" cx="480" cy="350" r="52" fill="none" stroke="#b4a0e8" stroke-width="1"/>
+  <rect x="388" y="316" width="184" height="68" rx="16" fill="var(--purple-d)" stroke="#8070b8" stroke-width="1.5"/>
+  <text x="480" y="338" text-anchor="middle" dominant-baseline="central" font-size="18" font-weight="700" fill="#c8bce8" font-family="var(--ar)">فصحى</text>
+  <text x="480" y="357" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="500" fill="#9488c0" font-family="var(--font)">Modern Standard Arabic</text>
+  <text x="480" y="373" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#6e6498" font-family="var(--font)">written · media · education</text>
+</g>
+
+<!-- QURANIC (6 o'clock) -->
+<g id="n-quranic" class="dnode" style="animation-delay:.1s" data-key="quranic">
+  <circle class="rip" cx="480" cy="520" r="48" fill="none" stroke="#b4a0e8" stroke-width="1"/>
+  <rect x="398" y="495" width="164" height="50" rx="14" fill="var(--purple-d)" stroke="#6e5eaa" stroke-width="1"/>
+  <text x="480" y="514" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="600" fill="#c0b4e0" font-family="var(--ar)">القرآنية</text>
+  <text x="480" y="532" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#8878b8" font-family="var(--font)">Classical · 7th c.</text>
+</g>
+
+<!-- EGYPTIAN (12 o'clock, +) -->
+<g id="n-egyptian" class="dnode" style="animation-delay:.14s" data-key="egyptian">
+  <circle class="rip" cx="480" cy="115" r="48" fill="none" stroke="#7cc8a0" stroke-width="1"/>
+  <rect x="406" y="91" width="148" height="50" rx="12" fill="var(--green-d)" stroke="#5caa84" stroke-width="1"/>
+  <text x="480" y="110" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="600" fill="#90d8b0" font-family="var(--ar)">المصرية</text>
+  <text x="480" y="129" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#5caa84" font-family="var(--font)">Egyptian · TV lingua franca</text>
+  <circle cx="550" cy="95" r="8" fill="var(--bg3)" stroke="#5caa84" stroke-width=".8"/>
+  <text class="expand-plus" x="550" y="96" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#5caa84">+</text>
+</g>
+
+<!-- LEVANTINE (10 o'clock, +) -->
+<g id="n-levantine" class="dnode" style="animation-delay:.17s" data-key="levantine">
+  <circle class="rip" cx="185" cy="88" r="48" fill="none" stroke="#7cc8a0" stroke-width="1"/>
+  <rect x="120" y="66" width="130" height="46" rx="12" fill="var(--green-d)" stroke="#5caa84" stroke-width="1"/>
+  <text x="185" y="83" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="600" fill="#90d8b0" font-family="var(--ar)">الشامية</text>
+  <text x="185" y="101" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#5caa84" font-family="var(--font)">Levantine</text>
+  <circle cx="246" cy="70" r="8" fill="var(--bg3)" stroke="#5caa84" stroke-width=".8"/>
+  <text class="expand-plus" x="246" y="71" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#5caa84">+</text>
+</g>
+
+<!-- IRAQI (2 o'clock, +) -->
+<g id="n-iraqi" class="dnode" style="animation-delay:.19s" data-key="iraqi">
+  <circle class="rip" cx="775" cy="115" r="48" fill="none" stroke="#68a8d8" stroke-width="1"/>
+  <rect x="715" y="93" width="120" height="46" rx="11" fill="var(--blue-d)" stroke="#5090c0" stroke-width="1"/>
+  <text x="775" y="110" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="600" fill="#90c8e8" font-family="var(--ar)">العراقية</text>
+  <text x="775" y="128" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#5090c0" font-family="var(--font)">Iraqi · Mesopotamian</text>
+  <circle cx="831" cy="97" r="8" fill="var(--bg3)" stroke="#5090c0" stroke-width=".8"/>
+  <text class="expand-plus" x="831" y="98" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#5090c0">+</text>
+</g>
+
+<!-- GULF (3 o'clock, +) -->
+<g id="n-gulf" class="dnode" style="animation-delay:.21s" data-key="gulf">
+  <circle class="rip" cx="815" cy="395" r="48" fill="none" stroke="#d4aa60" stroke-width="1"/>
+  <rect x="755" y="373" width="120" height="46" rx="10" fill="var(--amber-d)" stroke="#b89848" stroke-width="1"/>
+  <text x="815" y="390" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="600" fill="#e0c078" font-family="var(--ar)">الخليجية</text>
+  <text x="815" y="408" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#b89848" font-family="var(--font)">Gulf · Khaleeji</text>
+  <circle cx="871" cy="377" r="8" fill="var(--bg3)" stroke="#b89848" stroke-width=".8"/>
+  <text class="expand-plus" x="871" y="378" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#b89848">+</text>
+</g>
+
+<!-- YEMENI (4:30, +) -->
+<g id="n-yemeni" class="dnode" style="animation-delay:.23s" data-key="yemeni">
+  <circle class="rip" cx="750" cy="565" r="48" fill="none" stroke="#d4aa60" stroke-width="1"/>
+  <rect x="691" y="545" width="118" height="42" rx="10" fill="var(--amber-d)" stroke="#b89848" stroke-width="1"/>
+  <text x="750" y="561" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="600" fill="#e0c078" font-family="var(--ar)">اليمنية</text>
+  <text x="750" y="577" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#b89848" font-family="var(--font)">archaic features</text>
+  <circle cx="806" cy="549" r="8" fill="var(--bg3)" stroke="#b89848" stroke-width=".8"/>
+  <text class="expand-plus" x="806" y="550" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#b89848">+</text>
+</g>
+
+<!-- SUDANESE (5:30, +) -->
+<g id="n-sudanese" class="dnode" style="animation-delay:.25s" data-key="sudanese">
+  <circle class="rip" cx="630" cy="650" r="44" fill="none" stroke="#c88098" stroke-width="1"/>
+  <rect x="562" y="630" width="136" height="42" rx="12" fill="var(--rose-d)" stroke="#b07088" stroke-width="1"/>
+  <text x="630" y="646" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="600" fill="#e0a8b8" font-family="var(--ar)">السودانية</text>
+  <text x="630" y="662" text-anchor="middle" dominant-baseline="central" font-size="8.5" fill="#b07088" font-family="var(--font)">Sudanese · Nubian substrate</text>
+  <circle cx="694" cy="634" r="8" fill="var(--bg3)" stroke="#b07088" stroke-width=".8"/>
+  <text class="expand-plus" x="694" y="635" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#b07088">+</text>
+</g>
+
+<!-- LIBYAN (9 o'clock) -->
+<g id="n-libyan" class="dnode" style="animation-delay:.27s" data-key="libyan">
+  <circle class="rip" cx="150" cy="165" r="44" fill="none" stroke="#c87860" stroke-width="1"/>
+  <rect x="93" y="145" width="114" height="40" rx="18" fill="var(--coral-d)" stroke="#a86048" stroke-width="1"/>
+  <text x="150" y="160" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="600" fill="#d8a090" font-family="var(--ar)">الليبية</text>
+  <text x="150" y="175" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#a86048" font-family="var(--font)">Maghrebi · Italian</text>
+</g>
+
+<!-- TUNISIAN (8 o'clock) -->
+<g id="n-tunisian" class="dnode" style="animation-delay:.29s" data-key="tunisian">
+  <circle class="rip" cx="120" cy="400" r="44" fill="none" stroke="#c87860" stroke-width="1"/>
+  <rect x="60" y="380" width="120" height="40" rx="18" fill="var(--coral-d)" stroke="#a86048" stroke-width="1"/>
+  <text x="120" y="395" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="600" fill="#d8a090" font-family="var(--ar)">التونسية</text>
+  <text x="120" y="410" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#a86048" font-family="var(--font)">French · Berber · fast</text>
+</g>
+
+<!-- ALGERIAN (7:30) -->
+<g id="n-algerian" class="dnode" style="animation-delay:.31s" data-key="algerian">
+  <circle class="rip" cx="100" cy="562" r="44" fill="none" stroke="#c87860" stroke-width="1"/>
+  <rect x="38" y="542" width="124" height="40" rx="18" fill="var(--coral-d)" stroke="#a86048" stroke-width="1"/>
+  <text x="100" y="557" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="600" fill="#d8a090" font-family="var(--ar)">الجزائرية</text>
+  <text x="100" y="572" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#a86048" font-family="var(--font)">French · Berber dense</text>
+</g>
+
+<!-- MOROCCAN (7 o'clock) -->
+<g id="n-moroccan" class="dnode" style="animation-delay:.33s" data-key="moroccan">
+  <circle class="rip" cx="340" cy="668" r="44" fill="none" stroke="#c87860" stroke-width="1"/>
+  <rect x="275" y="646" width="130" height="44" rx="20" fill="var(--coral-d)" stroke="#a86048" stroke-width="1"/>
+  <text x="340" y="662" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="600" fill="#d8a090" font-family="var(--ar)">الدارجة المغربية</text>
+  <text x="340" y="678" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#a86048" font-family="var(--font)">most divergent · Amazigh</text>
+</g>
+
+<!-- HASSANIYA (8:30) -->
+<g id="n-hassaniya" class="dnode" style="animation-delay:.35s" data-key="hassaniya">
+  <circle class="rip" cx="190" cy="638" r="40" fill="none" stroke="#c87860" stroke-width="1"/>
+  <rect x="125" y="619" width="130" height="38" rx="18" fill="var(--coral-d)" stroke="#a86048" stroke-width="1"/>
+  <text x="190" y="633" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="600" fill="#d8a090" font-family="var(--ar)">الحسانية</text>
+  <text x="190" y="647" text-anchor="middle" dominant-baseline="central" font-size="8.5" fill="#a86048" font-family="var(--font)">Mauritanian · Saharan</text>
+</g>
+
+<!-- Legend -->
+<g opacity=".5">
+  <circle cx="858" cy="618" r="4" fill="#8070b8"/><text x="868" y="621" font-size="9" fill="#7a7268" font-family="var(--font)">Classical</text>
+  <circle cx="858" cy="634" r="4" fill="#5caa84"/><text x="868" y="637" font-size="9" fill="#7a7268" font-family="var(--font)">Egyptian + Levantine</text>
+  <circle cx="858" cy="650" r="4" fill="#5090c0"/><text x="868" y="653" font-size="9" fill="#7a7268" font-family="var(--font)">Iraqi</text>
+  <circle cx="858" cy="666" r="4" fill="#b89848"/><text x="868" y="669" font-size="9" fill="#7a7268" font-family="var(--font)">Gulf + Yemeni</text>
+  <circle cx="858" cy="682" r="4" fill="#b07088"/><text x="868" y="685" font-size="9" fill="#7a7268" font-family="var(--font)">Sudanese</text>
+  <circle cx="858" cy="698" r="4" fill="#a86048"/><text x="868" y="701" font-size="9" fill="#7a7268" font-family="var(--font)">Maghreb</text>
+</g>
+
+</svg>
+</div>
+
+<div id="hint">Tap any dialect to explore · nodes with + expand into sub-dialects</div>
+
+<div id="detail">
+  <div id="d-head"><div id="d-left"><div id="d-arabic"></div><div id="d-name"></div><div id="d-region"></div></div><button id="d-close">&times;</button></div>
+  <div id="d-meta"><span class="d-badge" id="d-badge"></span><div class="d-dots" id="d-dots"></div><span class="d-dlabel" id="d-dlabel"></span></div>
+  <div id="d-ref">
+    <button class="ref-btn" data-ref="quranic">vs Qurʾanic</button>
+    <button class="ref-btn on" data-ref="msa">vs MSA</button>
+  </div>
+  <div id="d-axes"></div>
+  <p id="d-note"></p>
+  <div id="d-phrase"><div id="d-phrase-label">Example phrase — "How are you?"</div><div id="d-phrase-ar"></div><div id="d-phrase-tr"></div></div>
+  <p id="d-body"></p>
+  <p id="d-tip"></p>
+</div>
+</div>
+
+<button id="feedback-btn">Feedback</button>
+
+<div id="feedback-overlay"><div id="feedback-modal">
+  <h3>Hey thanks for visiting!</h3>
+  <p>Frankly, one of my goals with this project was to get an understanding of how the many Arabic dialects relate to Qur'anic Arabic and Modern Standard Arabic. I imagine so many people start with those two and want to talk to more and more people across the Arabic-speaking world. It's honestly so cool how diverse the dialects and such of Arabic are! I truly hope you found it as fascinating as I did and gain something from this site!</p>
+  <p>I largely put this site together with Claude Code, so honestly, there might be some mistakes or areas where the information is iffy. Please let me know if there's any bugs or any inaccurate or questionable information! You can email me at <a href="mailto:rafan.quader@sjsu.edu">rafan.quader@sjsu.edu</a>!</p>
+  <p>Also here's a fun little note &mdash; going forward I might try to get little audio voice notes for the dialects, could be fun, but would need to find a lot of people to get all of them!</p>
+  <p>I imagine a lot more could be done with this site, if you have any cool ideas for me to add onto this, feel free to send an email!</p>
+  <p>Thanks again, Rafan.</p>
+  <button class="cm" style="margin-top:14px" onclick="document.getElementById('feedback-overlay').classList.remove('open')">Close</button>
+</div></div>
+
+<div id="embed-overlay"><div id="embed-modal">
+  <h3>Embed this map</h3>
+  <p>Copy the code below and paste it into any webpage. The search bar and feedback button are automatically hidden in embeds.</p>
+  <textarea id="embed-code" rows="3" readonly spellcheck="false"></textarea>
+  <p id="embed-note">The embed automatically adapts to the container width. A height of 700&ndash;800px works well.</p>
+  <div class="em-actions">
+    <button id="embed-copy">Copy code</button>
+    <button class="modal-close" onclick="document.getElementById('embed-overlay').classList.remove('open')">Close</button>
+  </div>
+</div></div>
+
+<script>
+const D={
+  fusha:{name:"Fusha — Modern Standard Arabic",arabic:"الفصحى",badge:"The shared standard",bc:"var(--purple-d)",bt:"var(--purple)",group:"classical",filter:"classical",hex:"#b4a0e8",cx:480,cy:350,tags:["msa","formal","media","news","education","written"],region:"All Arab countries",diff:{phono:1,lexical:1,grammar:1,vowels:1,codeswitch:1,overall:1,note:"Very close to Qurʾanic — shares phonology and grammar structure, with modernised vocabulary and simplified case usage."},phrase:{ar:"كيف حالك؟",tr:"kayfa ḥāluk?"},body:"MSA is the formal written Arabic used across all Arab countries — newspapers, speeches, books, subtitles. No one speaks it natively, but every educated Arabic speaker understands it.",tip:"Best starting point for most learners. Pair with one spoken dialect."},
+
+  quranic:{name:"Qurʾanic / Classical Arabic",arabic:"العربية الكلاسيكية",badge:"Root of all Arabic",bc:"var(--purple-d)",bt:"var(--purple)",group:"classical",filter:"classical",hex:"#b4a0e8",cx:480,cy:520,tags:["quran","classical","7th century","religious"],region:"Historical — Arabian Peninsula, 7th c.",diff:{phono:0,lexical:0,grammar:0,vowels:0,codeswitch:0,overall:0,note:"The Qurʾanic scoring reference — all dialect scores in this mode reflect distance from Classical Arabic."},phrase:{ar:"كَيْفَ حَالُكَ؟",tr:"kayfa ḥāluka? (with full tashkeel)"},body:"The language of the Qurʾan, fixed in its 7th-century classical form. Grammatically richer and more complex than MSA.",tip:"Very close to MSA structurally — learning one makes the other much easier."},
+
+  egyptian:{name:"Egyptian Arabic (Masri)",arabic:"العامية المصرية",badge:"Inner · high intelligibility",bc:"var(--green-d)",bt:"var(--green)",group:"egyptian",filter:"eastern",hex:"#7cc8a0",cx:480,cy:116,expandable:true,tags:["masri","cairo","film","tv","media","egypt"],region:"Egypt (100M+ speakers)",diff:{phono:3,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:3,note:"ق becomes a glottal stop and ث becomes 's', but vocabulary stays close to Fusha roots."},phrase:{ar:"إزيك؟ عامل إيه؟",tr:"izzayyak? ʿaamil eih?"},body:"Thanks to Egypt's massive film and TV industry, Egyptian Arabic is understood almost everywhere in the Arab world.",tip:"If you want one spoken dialect, Egyptian is the safest for being understood broadly.",satellites:[
+    {key:"cairo",name:"Cairo / Delta Egyptian",arabic:"مصري قاهري",region:"Cairo, Nile Delta, Lower Egypt",tags:["cairo","delta","lower egypt"],diff:{phono:3,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:3,note:"The 'standard' Egyptian — what you hear in films, TV, and music."},phrase:{ar:"إزيك يا باشا؟",tr:"izzayyak ya basha?"},body:"The prestige variety of Egyptian Arabic. Cairo dialect dominates Egyptian media and is what foreigners typically learn when studying 'Egyptian Arabic'.",tip:"This is the Egyptian dialect most resources teach."},
+    {key:"saidi",name:"Sa'idi (Upper Egyptian)",arabic:"صعيدي",region:"Upper Egypt (Luxor, Aswan, Sohag)",tags:["saidi","upper egypt","rural","guttural"],diff:{phono:2,lexical:2,grammar:3,vowels:2,codeswitch:1,overall:3,note:"Preserves more classical sounds including hard ق — closer to Qurʾanic phonology than Cairo."},phrase:{ar:"إزيك؟ عامل إيه يا زلمة؟",tr:"izzayyak? ʿaamil eih ya zalama?"},body:"More conservative than Cairo Arabic. Preserves the hard qaf and other classical sounds. Associated with rural Upper Egypt and sometimes stigmatized in Cairo.",tip:"Interesting for linguists — a living example of how Egyptian sounded before Cairo dialect dominated."}
+  ]},
+
+  levantine:{name:"Levantine Arabic",arabic:"الشامية",badge:"Inner · high intelligibility",bc:"var(--green-d)",bt:"var(--green)",group:"levantine",filter:"eastern",hex:"#7cc8a0",cx:185,cy:88,expandable:true,tags:["levantine","shami","levant"],region:"Palestine, Lebanon, Syria, Jordan",diff:{phono:2,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:2,note:"Retains many classical sounds — one of the closest dialect families to Fusha."},phrase:{ar:"كيفك؟ شو أخبارك؟",tr:"kifak? shu akhbārak?"},body:"The Levantine dialect family covers the Eastern Mediterranean. High mutual intelligibility within the group, and relatively accessible for Fusha readers.",tip:"Any Levantine variety is a good second dialect after Fusha — they're all mutually intelligible.",satellites:[
+    {key:"palestinian",name:"Palestinian Arabic",arabic:"اللهجة الفلسطينية",region:"Palestine (incl. Palestinian citizens of Israel)",tags:["palestine","west bank","gaza","levantine"],diff:{phono:2,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:2,note:"Retains ق and most classical sounds — closest spoken dialect to what you already read."},phrase:{ar:"كيفك؟ شو أخبارك؟",tr:"kifak? shu akhbārak?"},body:"Retains many classical sounds including the qaf in many communities. Relatively easy for Fusha learners to follow.",tip:"Excellent choice for learners focused on the Levant region."},
+    {key:"lebanese",name:"Lebanese Arabic",arabic:"اللهجة اللبنانية",region:"Lebanon",tags:["lebanon","beirut","french","pop music","levantine"],diff:{phono:2,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"French loanwords replace some Fusha vocab, but grammar stays Levantine-familiar."},phrase:{ar:"كيفك؟ شلونك؟",tr:"kifak? shlawnak?"},body:"Significant French loanwords and a distinctive musical rhythm. Widely heard in Arab pop music and TV.",tip:"Close enough to Palestinian and Syrian that learning one helps with the others."},
+    {key:"syrian",name:"Syrian Arabic (Damascene)",arabic:"اللهجة السورية",region:"Syria",tags:["syria","damascus","shami","levantine"],diff:{phono:2,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:2,note:"Very close to Palestinian — Damascus dialect is the Levantine 'standard' in many ways."},phrase:{ar:"كيفك؟ شو في؟",tr:"kifak? shu fi?"},body:"Damascus dialect is considered the most 'neutral' Levantine variety. Widely understood due to Syrian TV drama industry.",tip:"Syrian dramas are hugely popular across the Arab world — great listening practice."},
+    {key:"jordanian",name:"Jordanian Arabic",arabic:"اللهجة الأردنية",region:"Jordan",tags:["jordan","amman","levantine"],diff:{phono:2,lexical:2,grammar:3,vowels:3,codeswitch:1,overall:2,note:"Very close to Palestinian, with a distinct urban Amman variety influenced by diverse refugee populations."},phrase:{ar:"كيفك؟ شو أخبارك؟",tr:"kifak? shu akhbārak?"},body:"Urban Amman dialect has been shaped by waves of Palestinian, Iraqi, and Syrian immigration. Rural Jordanian preserves more Bedouin features.",tip:"Essentially mutually intelligible with Palestinian — learning one gives you both."}
+  ]},
+
+  iraqi:{name:"Iraqi Arabic",arabic:"العراقية",badge:"Mid · Mesopotamian",bc:"var(--blue-d)",bt:"var(--blue)",group:"iraqi",filter:"eastern",hex:"#68a8d8",cx:775,cy:116,expandable:true,tags:["iraq","baghdad","mesopotamian","turkic","kurdish"],region:"Iraq",diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Turkic and Kurdish loanwords, distinct verbal forms — not Gulf, not Levantine, its own family."},phrase:{ar:"شلونك؟ شكو ماكو؟",tr:"shlawnak? shaku māku?"},body:"Iraqi Arabic has Turkic and Kurdish loanwords, distinct verbal morphology, and is considered part of the Mesopotamian family — not Gulf Arabic.",tip:"The phrase 'shaku māku' (what's up?) is uniquely Iraqi — you won't hear it anywhere else.",satellites:[
+    {key:"baghdadi",name:"Baghdadi Arabic",arabic:"بغدادية",region:"Baghdad, central Iraq",tags:["baghdad","mesopotamian"],diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"The 'standard' Iraqi — what you hear in Iraqi media and music."},phrase:{ar:"شلونك؟ شكو ماكو؟",tr:"shlawnak? shaku māku?"},body:"The prestige variety of Iraqi Arabic. Baghdad dialect is what most people mean when they say 'Iraqi Arabic'.",tip:"Iraqi music and poetry are great resources for this dialect."},
+    {key:"basrawi",name:"Basrawi (Southern Iraqi)",arabic:"بصراوية",region:"Basra, southern Iraq",tags:["basra","southern iraq","gulf-influenced"],diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:1,overall:3,note:"Southern Iraqi with Gulf influence — a bridge between Mesopotamian and Khaleeji."},phrase:{ar:"شلونك؟ شخبارك؟",tr:"shlawnak? shakhbārak?"},body:"Basra's proximity to Kuwait and the Gulf gives Basrawi Arabic some Gulf features while retaining core Iraqi structure.",tip:"If you know Gulf Arabic, Basrawi will feel partially familiar."}
+  ]},
+
+  gulf:{name:"Gulf Arabic (Khaleeji)",arabic:"الخليجية",badge:"Mid · conservative sounds",bc:"var(--amber-d)",bt:"var(--amber)",group:"gulf",filter:"peninsula",hex:"#d4aa60",cx:815,cy:395,expandable:true,tags:["khaleeji","gulf","peninsula","conservative"],region:"Saudi Arabia, Kuwait, Bahrain, Qatar, UAE, Oman",diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Preserves classical ق and ض — sounds will feel familiar from Qurʾanic recitation."},phrase:{ar:"شلونك؟ اشحوالك؟",tr:"shlawnak? ishḥawālak?"},body:"Gulf Arabic retains several classical phonemes. The shared Khaleeji identity spans the GCC states with accent-level differences between them.",tip:"Most useful for work in the Gulf states. Clear pronunciation makes it relatively learnable.",satellites:[
+    {key:"najdi",name:"Saudi Najdi",arabic:"نجدية",region:"Central Saudi Arabia (Riyadh, Qassim)",tags:["najdi","riyadh","bedouin","saudi"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Bedouin-influenced, clipped vowels — the prestige dialect of modern Saudi media."},phrase:{ar:"هلا والله، كيف الحال؟",tr:"hala wallah, kayf al-ḥāl?"},body:"Najdi Arabic is Bedouin-influenced with conservative consonants and clipped vowels. It has become the prestige dialect of Saudi media and government.",tip:"If you're working in Riyadh, this is what you'll hear."},
+    {key:"hejazi",name:"Saudi Hejazi",arabic:"حجازية",region:"Western Saudi Arabia (Jeddah, Makkah, Madinah, Taif)",tags:["hejazi","jeddah","makkah","madinah","pilgrim"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Cosmopolitan from centuries of hajj pilgrim contact — more vowel variation than Najdi."},phrase:{ar:"كيف الحال؟ ايش أخبارك؟",tr:"kayf al-ḥāl? eish akhbārak?"},body:"Centuries of hajj pilgrim contact made Jeddah, Makkah, and Madinah a linguistic melting pot. More vowel phonemes than Najdi, absorbed loanwords from Persian, Turkish, Malay, and Swahili through pilgrimage.",tip:"Hejazi feels 'softer' than Najdi — historically the more cosmopolitan dialect."},
+    {key:"kuwaiti",name:"Kuwaiti Arabic",arabic:"كويتية",region:"Kuwait",tags:["kuwait","gulf"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Classic Khaleeji with Persian/Indian trade loanwords from Kuwait's merchant history."},phrase:{ar:"شلونك؟ شخبارك؟",tr:"shlawnak? shakhbārak?"},body:"Kuwaiti Arabic reflects Kuwait's history as a trading port. Has Persian and Indian loanwords from its merchant traditions.",tip:"Very close to other Gulf dialects — easily transferable."},
+    {key:"bahraini",name:"Bahraini Arabic",arabic:"بحرينية",region:"Bahrain",tags:["bahrain","baharna","gulf"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Unique pre-Islamic Baharna substrate gives it features not found in other Gulf dialects."},phrase:{ar:"شلونك؟ شخبارك؟",tr:"shlawnak? shakhbārak?"},body:"Has a unique Baharna Arabic substrate from the indigenous population that predates Gulf Arabic dominance. Two distinct varieties coexist.",tip:"Interesting linguistically — one of the few Gulf dialects with a visible pre-Islamic substrate."},
+    {key:"qatari",name:"Qatari Arabic",arabic:"قطرية",region:"Qatar",tags:["qatar","doha","gulf"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Standard Khaleeji — very close to other Gulf varieties."},phrase:{ar:"شلونك؟",tr:"shlawnak?"},body:"Qatari Arabic is close to the broader Gulf standard. Qatar's small native population means you'll hear many other Arabic dialects in Doha.",tip:"Gulf Arabic basics will serve you well in Qatar."},
+    {key:"emirati",name:"Emirati Arabic",arabic:"إماراتية",region:"UAE (Abu Dhabi, Dubai, Sharjah)",tags:["uae","dubai","abu dhabi","emirati","gulf"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:2,overall:2,note:"Gulf base with heavy English mixing in urban Dubai — code-switching is very common."},phrase:{ar:"شحالك؟ عساك بخير؟",tr:"shiḥālak? ʿasāk bi-khayr?"},body:"Emirati Arabic is Gulf-based but urban areas (especially Dubai) have very heavy English code-switching due to the expat-majority population.",tip:"In Dubai you might hear more English than Arabic — but Emirati Arabic is the local variety."},
+    {key:"omani",name:"Omani Arabic",arabic:"عمانية",region:"Oman (+ historically Zanzibar)",tags:["oman","muscat","zanzibar","swahili","gulf"],diff:{phono:2,lexical:3,grammar:2,vowels:2,codeswitch:1,overall:2,note:"South Arabian substrate and Swahili/Bantu loanwords from Oman's Zanzibar trade empire."},phrase:{ar:"كيف الحال؟",tr:"kayf al-ḥāl?"},body:"Omani Arabic has genuine South Arabian substrate and unique features from Oman's maritime empire that stretched to East Africa. Swahili and Bantu loanwords appear in coastal varieties.",tip:"Distinct enough from other Gulf dialects to be worth noting separately."}
+  ]},
+
+  yemeni:{name:"Yemeni Arabic",arabic:"اليمنية",badge:"Mid · most conservative",bc:"var(--amber-d)",bt:"var(--amber)",group:"yemeni",filter:"peninsula",hex:"#d4aa60",cx:750,cy:566,expandable:true,tags:["yemen","archaic","conservative","peninsula"],region:"Yemen",diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Most phonologically conservative — preserves sounds closest to what you hear in tajweed."},phrase:{ar:"كيف حالك؟",tr:"kayf ḥālak?"},body:"One of the most phonologically conservative dialect families — preserves sounds and features lost elsewhere.",tip:"Less studied as a learner dialect, but valuable if you have specific regional ties.",satellites:[
+    {key:"sanaani",name:"Sana'ani Arabic",arabic:"صنعانية",region:"Northern Yemen highlands (Sana'a)",tags:["sanaa","northern yemen","highland"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Highland dialect — the most conservative Yemeni variety, closest to classical sounds."},phrase:{ar:"كيف حالك يا أخي؟",tr:"kayf ḥālak ya akhi?"},body:"The Sana'a variety is considered the 'standard' Yemeni. Preserves classical phonemes that have been lost in most other dialects.",tip:"If you can read Qurʾan with tajweed, Sana'ani sounds will feel remarkably familiar."},
+    {key:"adeni",name:"Adeni Arabic",arabic:"عدنية",region:"Southern Yemen coast (Aden)",tags:["aden","southern yemen","coastal","trade"],diff:{phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Coastal trade influence — slightly more Gulf-flavored than Sana'ani."},phrase:{ar:"كيف الحال؟ شخبارك؟",tr:"kayf al-ḥāl? shakhbārak?"},body:"Aden's history as a major port city gave its dialect more Gulf and trade language influence compared to highland Sana'ani.",tip:"A bridge between Yemeni highland and Gulf coastal dialects."}
+  ]},
+
+  sudanese:{name:"Sudanese Arabic",arabic:"السودانية",badge:"Distinct · Nubian substrate",bc:"var(--rose-d)",bt:"var(--rose)",group:"sudanese",filter:"eastern",hex:"#c88098",cx:630,cy:651,expandable:true,tags:["sudan","khartoum","nubian","nile"],region:"Sudan, South Sudan",diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Heavy Nubian substrate, unique vocabulary and rhythm — its own distinct branch."},phrase:{ar:"كيفك؟ إنت تمام؟",tr:"kifak? inta tamām?"},body:"Sudanese Arabic has a heavy Nubian substrate, unique vocabulary, and a distinct rhythm. Often forgotten in dialect discussions but spoken by 40M+ people.",tip:"Distinct enough that other Arabic speakers may struggle at first — but the Fusha roots are there.",satellites:[
+    {key:"khartoum",name:"Khartoum Arabic",arabic:"خرطومية",region:"Sudan (Khartoum, Omdurman)",tags:["khartoum","omdurman","sudan"],diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"The 'standard' Sudanese — Nubian substrate with unique vocabulary."},phrase:{ar:"كيفك؟ الحمد لله؟",tr:"kifak? al-ḥamdu lillāh?"},body:"The prestige variety of Sudanese Arabic. Khartoum dialect is what most people learn as 'Sudanese Arabic'.",tip:"Sudanese Arabic has its own media ecosystem — good resources exist."},
+    {key:"juba",name:"Juba Arabic",arabic:"عربي جوبا",region:"South Sudan (Juba) — Arabic not majority; used as lingua franca",tags:["juba","south sudan","creole","pidgin"],diff:{phono:4,lexical:5,grammar:5,vowels:4,codeswitch:5,overall:5,note:"A true creole — grammar rebuilt from scratch, heavy local language mixing. Structurally unlike any other Arabic variety."},phrase:{ar:"أنت كويس؟",tr:"anta kuwayis?"},body:"Juba Arabic is a creole/pidgin used as a lingua franca in South Sudan. Extremely simplified grammar — no case endings, minimal conjugation. Debatable whether it's 'Arabic' in the traditional sense.",tip:"Fascinating for linguists. Shows what happens when Arabic becomes a contact language."}
+  ]},
+
+  libyan:{name:"Libyan Arabic",arabic:"اللهجة الليبية",badge:"Outer · bridge dialect",bc:"var(--coral-d)",bt:"var(--coral)",group:"maghreb",filter:"maghreb",hex:"#c87860",cx:150,cy:165,tags:["libya","tripoli","benghazi","italian","maghrebi","berber"],region:"Libya (Tripoli, Benghazi, Misrata)",diff:{phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Italian loanwords and Berber substrate — a bridge between Eastern and Maghrebi Arabic."},phrase:{ar:"شنو حالك؟ لاباس؟",tr:"shnu ḥālak? labās?"},body:"Features of both Maghrebi and Eastern Arabic. Heavily influenced by Italian during colonization.",tip:"A bridge dialect between Mashreq and Maghreb — still challenging for Eastern learners."},
+
+  tunisian:{name:"Tunisian Arabic (Tounsi)",arabic:"الدارجة التونسية",badge:"Outer · most divergent",bc:"var(--coral-d)",bt:"var(--coral)",group:"maghreb",filter:"maghreb",hex:"#c87860",cx:120,cy:400,tags:["tounsi","tunisia","tunis","french","berber","fast","maghrebi"],region:"Tunisia (Tunis, Sfax, Sousse)",diff:{phono:4,lexical:4,grammar:3,vowels:4,codeswitch:3,overall:4,note:"Fast tempo, heavy French, vowels compressed — Qurʾanic reading barely helps with listening."},phrase:{ar:"أشنية حوالك؟ لاباس؟",tr:"ashniyya ḥwālek? labās?"},body:"Spoken at a notoriously fast pace with heavy French and Berber substrate. Low mutual intelligibility with Eastern Arabic.",tip:"Extremely difficult for Eastern Arabic learners aurally. Best approached after solid Fusha."},
+
+  algerian:{name:"Algerian Arabic (Darja)",arabic:"الدارجة الجزائرية",badge:"Outer · most divergent",bc:"var(--coral-d)",bt:"var(--coral)",group:"maghreb",filter:"maghreb",hex:"#c87860",cx:100,cy:562,tags:["darja","algeria","algiers","french","berber","colonial","maghrebi"],region:"Algeria (Algiers, Oran, Constantine)",diff:{phono:4,lexical:4,grammar:3,vowels:4,codeswitch:4,overall:4,note:"French-Arabic-Berber in every sentence — Fusha vocab recognition drops sharply."},phrase:{ar:"واش راك؟ لاباس؟",tr:"wāsh rāk? labās?"},body:"Blends heavily with French and Berber — many sentences mix all three. 132 years of French colonization left deep marks.",tip:"Approach as a near-separate language if your background is Levantine or Gulf Arabic."},
+
+  moroccan:{name:"Moroccan Darija",arabic:"الدارجة المغربية",badge:"Outer · most divergent",bc:"var(--coral-d)",bt:"var(--coral)",group:"maghreb",filter:"maghreb",hex:"#c87860",cx:340,cy:668,tags:["darija","morocco","casablanca","amazigh","berber","french","spanish","maghrebi"],region:"Morocco (Casablanca, Rabat, Fez, Marrakech)",diff:{phono:5,lexical:5,grammar:4,vowels:5,codeswitch:4,overall:5,note:"Short vowels nearly disappear; Berber and French replace most Fusha roots you know."},phrase:{ar:"كيداير؟ لاباس؟",tr:"kidāyr? labās?"},body:"Often cited as the hardest Arabic dialect for Eastern speakers. Strongest Amazigh substrate, heavy French and Spanish borrowing.",tip:"Fascinating but very distinct. Even Algerians can struggle with it."},
+
+  hassaniya:{name:"Hassaniya Arabic",arabic:"الحسانية",badge:"Outer · Saharan",bc:"var(--coral-d)",bt:"var(--coral)",group:"maghreb",filter:"maghreb",hex:"#c87860",cx:190,cy:638,tags:["hassaniya","mauritania","mauritanian","sahara","western sahara","moorish"],region:"Mauritania, Western Sahara (also Moorish minorities in Mali, Senegal, Niger — Arabic not majority there)",diff:{phono:3,lexical:4,grammar:3,vowels:3,codeswitch:3,overall:4,note:"More archaic than other Maghreb — Saharan Berber substrate, Wolof/Pulaar influence instead of French."},phrase:{ar:"لا باس عليك؟ اشنهو حالك؟",tr:"labās ʿalīk? ashnahū ḥālak?"},body:"Very distinct from other Maghreb dialects. More archaic vocabulary, Saharan Berber substrate (different from Atlas Berber), and minimal French — more Wolof and Pulaar influence instead.",tip:"Rarely studied as a learner dialect but important for understanding Mauritanian culture."}
+};
+
+const AXES=[{key:'phono',label:'Sounds'},{key:'lexical',label:'Vocabulary'},{key:'grammar',label:'Grammar'},{key:'vowels',label:'Vowels'},{key:'codeswitch',label:'Mixing'}];
+
+// MSA-relative difficulty scores — keyed by dialect key or satellite key
+const MSA_DIFFS={
+  fusha:    {phono:0,lexical:0,grammar:0,vowels:0,codeswitch:0,overall:0,note:"The scoring reference for MSA mode — all dialects measured relative to Modern Standard Arabic."},
+  quranic:  {phono:1,lexical:2,grammar:2,vowels:1,codeswitch:0,overall:2,note:"Archaic case endings and classical vocabulary differ from modern MSA — the script and sounds are still familiar."},
+  egyptian: {phono:3,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"MSA readers get a head start from Egyptian TV and film — the phonological shift is still real, but the vocabulary gap is narrower."},
+  levantine:{phono:2,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"Retains recognizable Fusha roots — one of the more accessible families from an MSA baseline."},
+  iraqi:    {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Turkic and Kurdish loanwords are equally opaque from MSA — a distinct Mesopotamian system regardless of classical grounding."},
+  gulf:     {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Conservative phonology close to MSA — sounds familiar, grammar shift manageable."},
+  yemeni:   {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Archaic features are slightly less accessible from MSA than Qurʾanic — still a conservative, learnable dialect overall."},
+  sudanese: {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Heavy Nubian substrate creates equal difficulty from either baseline — its own distinct branch."},
+  libyan:   {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"Italian loanwords are not more familiar from MSA — equally divergent from both classical baselines."},
+  tunisian: {phono:4,lexical:4,grammar:3,vowels:4,codeswitch:3,overall:4,note:"Compressed speech and heavy French mixing — challenging from any starting point."},
+  algerian: {phono:4,lexical:4,grammar:3,vowels:4,codeswitch:3,overall:4,note:"Dense consonant clusters and French-Berber mixing are equally opaque from an MSA baseline."},
+  moroccan: {phono:4,lexical:5,grammar:4,vowels:4,codeswitch:3,overall:5,note:"Most divergent Arabic dialect — equally difficult from MSA or Qurʾanic background."},
+  hassaniya:{phono:3,lexical:4,grammar:3,vowels:3,codeswitch:2,overall:4,note:"Saharan Bedouin features and Berber mixing are equally distant from MSA."},
+  // Egyptian satellites
+  cairo:    {phono:3,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"Cairo's media dominance gives MSA readers significant passive exposure — still a clear phonological shift."},
+  saidi:    {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Preserves classical consonants — sounds slightly more familiar to MSA readers than to those without formal Arabic grounding."},
+  // Levantine satellites
+  palestinian:{phono:2,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"Retains classical consonants including qaf — close to MSA phonology with manageable vocabulary shifts."},
+  lebanese: {phono:2,lexical:3,grammar:2,vowels:3,codeswitch:2,overall:3,note:"French loanwords add a different kind of opacity from an MSA background — familiar structure, unfamiliar code-switching."},
+  syrian:   {phono:2,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"Very close to MSA phonological baseline — Syrian TV dramas are accessible for MSA readers."},
+  jordanian:{phono:2,lexical:2,grammar:2,vowels:3,codeswitch:1,overall:2,note:"Essentially the same as Palestinian from an MSA starting point — manageable with grammar work."},
+  // Iraqi satellites
+  baghdadi: {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"The standard Iraqi — equally challenging from MSA or Qurʾanic, operating within its own Mesopotamian system."},
+  basrawi:  {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:1,overall:3,note:"Gulf phonological influence does not make this more accessible from MSA baseline."},
+  // Gulf satellites
+  najdi:    {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Conservative phonology familiar to MSA readers — Bedouin features noticeable but not a barrier."},
+  hejazi:   {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Cosmopolitan pilgrimage vocabulary is varied but the grammar baseline is accessible from MSA."},
+  kuwaiti:  {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Persian and Indian trade loanwords introduce new vocabulary, but Gulf grammar stays accessible."},
+  bahraini: {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Baharna substrate adds unique features but core phonology remains MSA-compatible."},
+  qatari:   {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Standard Gulf — accessible phonology from an MSA baseline."},
+  emirati:  {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:2,overall:2,note:"Heavy English code-switching in urban areas is a distinct challenge — MSA readers still face the Gulf phonological shift."},
+  omani:    {phono:2,lexical:3,grammar:2,vowels:2,codeswitch:1,overall:2,note:"South Arabian substrate and Swahili loanwords are equally opaque from an MSA baseline."},
+  // Yemeni satellites
+  sanaani:  {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Classical sounds Qurʾanic readers recognize are slightly less familiar from MSA — still a conservative, learnable variety."},
+  adeni:    {phono:2,lexical:2,grammar:2,vowels:2,codeswitch:1,overall:2,note:"Coastal trade influence brings some Gulf-familiar features — accessible from an MSA baseline."},
+  // Sudanese satellites
+  khartoum: {phono:3,lexical:3,grammar:3,vowels:3,codeswitch:2,overall:3,note:"The Sudanese standard — equally challenging from MSA or Qurʾanic baseline."},
+  juba:     {phono:4,lexical:5,grammar:5,vowels:4,codeswitch:5,overall:5,note:"A creole — grammar rebuilt from scratch, heavy local language mixing. Structurally unlike any other Arabic variety."},
+};
+// Attach MSA diffs to D entries and satellites
+(function(){
+  Object.keys(MSA_DIFFS).forEach(k=>{
+    if(D[k]){D[k].diffMSA=MSA_DIFFS[k];return;}
+    Object.values(D).forEach(d=>{if(d.satellites)d.satellites.forEach(s=>{if(s.key===k)s.diffMSA=MSA_DIFFS[k];});});
+  });
+})();
+
+let refMode='msa'; // 'quranic' | 'msa'
+
+let ak=null,af='all',st='',stm=null,expandedKeys=new Set();
+
+function haptic(){if(navigator.vibrate)navigator.vibrate([15])}
+
+function doRip(el){const c=el.querySelector('.rip');if(!c)return;c.classList.remove('go');void c.offsetWidth;c.classList.add('go');setTimeout(()=>c.classList.remove('go'),550)}
+
+function lineOn(k,on){const l=document.getElementById('l-'+k);if(!l)return;if(on){l.classList.add('on');l.style.strokeWidth=(parseFloat(l.dataset.sw||'1')+1.2)+'';l.style.opacity='.75'}else{l.classList.remove('on');l.style.strokeWidth=l.dataset.sw||'';l.style.opacity=l.dataset.op||''}}
+
+function nodeSel(el,on){el.classList.toggle('sel',on);const r=el.querySelector('rect');if(!r)return;if(on){r.dataset.osw=r.getAttribute('stroke-width')||'1';r.setAttribute('stroke-width','2.5')}else r.setAttribute('stroke-width',r.dataset.osw||'1')}
+
+/* ── Satellite expansion ── */
+// Hardcoded expansion directions per node — avoids collisions with neighbors
+const SAT_DIRS={
+  egyptian:  {angle:-90, sweep:120},  // expand upward — room above (node is near top center)
+  levantine: {angle:-120, sweep:100}, // expand upper-left — AWAY from Egyptian and Libyan
+  iraqi:     {angle:-60,  sweep:80},  // expand upper-right into open space
+  gulf:      {angle:-50,  sweep:160}, // expand upper-right — away from legend and Yemeni
+  yemeni:    {angle:30,   sweep:70},  // expand rightward/down
+  sudanese:  {angle:120,  sweep:80},  // expand downward-right (node is lower-center)
+};
+
+function getMainNodes(){
+  const pad=8,mains=[];
+  Object.keys(D).forEach(k=>{
+    if(D[k]&&typeof D[k].cx==='number'&&k!=='fusha'){
+      const el=document.getElementById('n-'+k);
+      let r=36;
+      if(el){const c=el.querySelector('circle');if(c&&c.getAttribute('r'))r=parseFloat(c.getAttribute('r'));}
+      mains.push({x:D[k].cx,y:D[k].cy,r:r+pad});
+    }
+  });
+  return mains;
+}
+
+function getSatPositions(key,cx,cy,count,sharedPlaced){
+  const w=120,h=34,pad=12;
+  const dir=SAT_DIRS[key]||{angle:0,sweep:120};
+  const sweep=Math.min(dir.sweep,35*Math.max(count,3));
+  const startAngle=(dir.angle||0)-sweep/2;
+  const mains=getMainNodes();
+  const placed=sharedPlaced||[];
+  const positions=[];
+  const vb=FULL_VB;
+  const bx1=vb[0]+pad+w/2,by1=vb[1]+pad+h/2;
+  const bx2=vb[0]+vb[2]-pad-w/2,by2=vb[1]+vb[3]-pad-h/2;
+
+  // Legend blocked zone: x=848-960, y=608-710
+  const legendRect={x:848,y:608,w:112,h:102};
+
+  function rectsOverlap(a,b){
+    return !(a.x+a.w<b.x||a.x>b.x+b.w||a.y+a.h<b.y||a.y>b.y+b.h);
+  }
+
+  function tryPlace(x,y){
+    if(x<bx1||x>bx2||y<by1||y>by2)return false;
+    const rect={x:x-w/2-pad,y:y-h/2-pad,w:w+pad*2,h:h+pad*2};
+    if(rectsOverlap(rect,legendRect))return false;
+    for(const p of placed){
+      const r2={x:p.x-w/2-pad,y:p.y-h/2-pad,w:w+pad*2,h:h+pad*2};
+      if(!(rect.x+rect.w<r2.x||rect.x>r2.x+r2.w||rect.y+rect.h<r2.y||rect.y>r2.y+r2.h))return false;
+    }
+    for(const m of mains){
+      const cx2=Math.max(rect.x,Math.min(m.x,rect.x+rect.w));
+      const cy2=Math.max(rect.y,Math.min(m.y,rect.y+rect.h));
+      if(Math.sqrt((cx2-m.x)**2+(cy2-m.y)**2)<m.r+6)return false;
+    }
+    return true;
+  }
+
+  // Interleaved placement order: start at arc center, expand outward.
+  // This keeps all satellites roughly equidistant from the parent node.
+  function interleaveOrder(n){
+    if(n===1)return[0];
+    const order=[];
+    const q=[[0,n-1]];
+    while(q.length){const[lo,hi]=q.shift();const mid=Math.floor((lo+hi)/2);order.push(mid);if(mid>lo)q.push([lo,mid-1]);if(mid<hi)q.push([mid+1,hi]);}
+    return order;
+  }
+  const placementOrder=interleaveOrder(count);
+  // positions array indexed by original satellite index
+  const positionsByIndex=new Array(count);
+
+  for(const i of placementOrder){
+    const t=count===1?0.5:i/(count-1);
+    const baseAngle=(startAngle+sweep*t)*Math.PI/180;
+    let pos=null;
+    // First pass: preferred arc direction, increasing radius
+    outer: for(let rr=110;rr<=500;rr+=10){
+      for(let ao=0;ao<=40;ao+=5){
+        const ang=baseAngle+(ao/180)*Math.PI*(ao%2?1:-1);
+        const x=cx+rr*Math.cos(ang),y=cy+rr*Math.sin(ang);
+        if(tryPlace(x,y)){pos={x,y};break outer;}
+      }
+    }
+    // Second pass: if preferred arc failed, sweep full 360 at increasing radii
+    if(!pos){
+      outer2: for(let rr=110;rr<=500;rr+=15){
+        for(let a=0;a<360;a+=10){
+          const ang=a*Math.PI/180;
+          const x=cx+rr*Math.cos(ang),y=cy+rr*Math.sin(ang);
+          if(tryPlace(x,y)){pos={x,y};break outer2;}
+        }
+      }
+    }
+    // Last resort fallback: clamp base angle position to bounds
+    if(!pos){
+      const fx=cx+160*Math.cos(baseAngle),fy=cy+160*Math.sin(baseAngle);
+      pos={x:Math.max(bx1,Math.min(bx2,fx)),y:Math.max(by1,Math.min(by2,fy))};
+    }
+    placed.push(pos);positionsByIndex[i]=pos;
+  }
+  // Push to positions in original order so rendering matches satellite data order
+  for(let i=0;i<count;i++)positions.push(positionsByIndex[i]);
+  return positions;
+}
+
+// Compute positions for ALL expandable groups in one global pass (no DOM reads)
+function computeAllSatPositions(){
+  const sharedPlaced=[];
+  const result={};
+  const expandableKeys=Object.keys(D).filter(k=>D[k]&&D[k].satellites&&D[k].satellites.length);
+  for(const key of expandableKeys){
+    const d=D[key];
+    result[key]=getSatPositions(key,d.cx,d.cy,d.satellites.length,sharedPlaced);
+    // sharedPlaced already updated inside getSatPositions (passed by reference)
+  }
+  return result;
+}
+
+function getExistingSatPositions(){
+  const layer=document.getElementById('sat-layer');
+  const positions=[];
+  layer.querySelectorAll('.sat').forEach(g=>{
+    const rect=g.querySelector('rect');
+    if(rect){positions.push({x:parseFloat(rect.getAttribute('x'))+60,y:parseFloat(rect.getAttribute('y'))+17});}
+  });
+  return positions;
+}
+
+// Route bezier control point around the legend zone
+const LINE_LEGEND={x:828,y:590,w:152,h:130};
+function safeCtrl(x1,y1,x2,y2){
+  const defX=(x1+x2)/2, defY=(y1+y2)/2-15;
+  // Sample 5 points along straight line to detect legend crossing
+  for(let t=0.15;t<=0.85;t+=0.175){
+    const px=x1+(x2-x1)*t, py=y1+(y2-y1)*t;
+    if(px>=LINE_LEGEND.x&&px<=LINE_LEGEND.x+LINE_LEGEND.w&&
+       py>=LINE_LEGEND.y&&py<=LINE_LEGEND.y+LINE_LEGEND.h){
+      // Route above legend
+      return {x:defX, y:LINE_LEGEND.y-30};
+    }
+  }
+  return {x:defX,y:defY};
+}
+
+function renderSatGroup(key,positions,d){
+  const layer=document.getElementById('sat-layer');
+  const cs=getComputedStyle(document.documentElement);
+  // All lines first, then all boxes — so no line renders on top of a box
+  d.satellites.forEach((s,i)=>{
+    const pos=positions[i];
+    const ctrl=safeCtrl(d.cx,d.cy,pos.x,pos.y);
+    const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+    line.setAttribute('class','sat-line');
+    line.setAttribute('d',`M${d.cx},${d.cy} Q${ctrl.x},${ctrl.y} ${pos.x},${pos.y}`);
+    line.setAttribute('stroke',d.hex);line.setAttribute('stroke-width','1');
+    line.style.animationDelay=(i*0.05)+'s';
+    line.dataset.satParent=key;line.dataset.satKey=s.key;
+    layer.appendChild(line);
+  });
+  d.satellites.forEach((s,i)=>{
+    const pos=positions[i];
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','sat');g.dataset.satKey=s.key;g.dataset.satParent=key;
+    g.style.animationDelay=(i*0.05)+'s';
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',pos.x-60);rect.setAttribute('y',pos.y-17);
+    rect.setAttribute('width','120');rect.setAttribute('height','34');
+    rect.setAttribute('rx','10');
+    const varName=d.bc.match(/var\(([^)]+)\)/);
+    rect.setAttribute('fill',varName?cs.getPropertyValue(varName[1]).trim():d.bc);
+    rect.setAttribute('stroke',d.hex);rect.setAttribute('stroke-width','.8');
+    g.appendChild(rect);
+    const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',pos.x);txt.setAttribute('y',pos.y-3);
+    txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','central');
+    txt.setAttribute('font-size','10.5');txt.setAttribute('font-weight','600');
+    txt.setAttribute('fill',d.hex);txt.setAttribute('font-family','var(--ar)');
+    txt.textContent=s.arabic;g.appendChild(txt);
+    const txt2=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt2.setAttribute('x',pos.x);txt2.setAttribute('y',pos.y+10);
+    txt2.setAttribute('text-anchor','middle');txt2.setAttribute('dominant-baseline','central');
+    txt2.setAttribute('font-size','7.5');txt2.setAttribute('fill',d.hex);
+    txt2.setAttribute('font-family','var(--font)');txt2.setAttribute('opacity','.7');
+    txt2.textContent=s.name.split('(')[0].trim();g.appendChild(txt2);
+    g.addEventListener('click',function(e){
+      e.stopPropagation();haptic();
+      layer.querySelectorAll('.sat.sel').forEach(x=>x.classList.remove('sel'));
+      layer.querySelectorAll('.sat-line.on').forEach(x=>x.classList.remove('on'));
+      this.classList.add('sel');
+      // Animate this satellite's connector line
+      const satLine=layer.querySelector(`.sat-line[data-sat-key="${s.key}"][data-sat-parent="${key}"]`);
+      if(satLine)satLine.classList.add('on');
+      // Deactivate previous active main node if it differs from this satellite's parent
+      if(ak&&ak!==key){lineOn(ak,false);const prev=document.getElementById('n-'+ak);if(prev)nodeSel(prev,false);}
+      // Activate the parent main node and its line to MSA
+      ak=key;
+      const parentEl=document.getElementById('n-'+key);
+      if(parentEl)nodeSel(parentEl,true);
+      lineOn(key,true);
+      showDetail(s,d.hex);
+    });
+    layer.appendChild(g);
+  });
+}
+
+function expandGroup(key){
+  if(expandedKeys.has(key))return;
+  const d=D[key];if(!d||!d.satellites)return;
+  expandedKeys.add(key);
+  const existing=getExistingSatPositions();
+  const positions=getSatPositions(key,d.cx,d.cy,d.satellites.length,existing);
+  renderSatGroup(key,positions,d);
+}
+
+function collapseGroup(key){
+  const layer=document.getElementById('sat-layer');
+  if(key){
+    if(!expandedKeys.has(key))return;
+    layer.querySelectorAll(`[data-sat-parent="${key}"]`).forEach(el=>el.remove());
+    expandedKeys.delete(key);
+  }else{
+    if(!expandedKeys.size)return;
+    layer.innerHTML='';
+    expandedKeys.clear();
+  }
+  if(!expandedKeys.size&&typeof zoomReset==='function')zoomReset();
+  // Sync expand-all button state
+  const ea=document.getElementById('expand-all-btn');
+  if(ea){ea.classList.remove('on');ea.innerHTML='&#x29C9;';}
+}
+
+/* ── Detail card ── */
+let _currentDetail=null,_currentHex=null;
+
+function showDetail(d,hex){
+  _currentDetail=d;_currentHex=hex;
+  document.getElementById('d-arabic').textContent=d.arabic;
+  document.getElementById('d-name').textContent=d.name;
+  document.getElementById('d-region').textContent=d.region||'';
+  const bg=document.getElementById('d-badge');
+  bg.textContent=d.badge||'';bg.style.background=d.bc||'var(--bg3)';bg.style.color=d.bt||hex||'var(--tx2)';
+  if(!d.badge)bg.style.display='none';else bg.style.display='';
+  renderDiff(d,hex);
+  document.getElementById('d-phrase-ar').textContent=d.phrase.ar;
+  document.getElementById('d-phrase-tr').textContent=d.phrase.tr;
+  document.getElementById('d-body').textContent=d.body;
+  document.getElementById('d-tip').innerHTML='<b>Learner tip:</b> '+d.tip;
+  document.getElementById('detail').classList.add('open');
+  document.getElementById('hint').classList.add('hid');
+}
+
+function renderDiff(d,hex){
+  const diff=refMode==='msa'?(d.diffMSA||d.diff):d.diff;
+  const h=hex||d.hex||'#999';
+  const dots=document.getElementById('d-dots'),dl=document.getElementById('d-dlabel');
+  const refLabel=refMode==='msa'?'Modern Standard Arabic':'Qurʾanic Arabic';
+  if(diff.overall===0){
+    dots.innerHTML='';
+    dl.textContent='Scoring reference — '+refLabel;
+  }else{
+    dots.innerHTML=Array.from({length:5},(_,i)=>'<span class="d-dot'+(i<diff.overall?' on':'')+'" style="color:'+h+'"></span>').join('');
+    dl.textContent=diff.overall+'/5 vs '+refLabel;
+  }
+  const ax=document.getElementById('d-axes');
+  if(diff.overall===0)ax.innerHTML='';
+  else ax.innerHTML=AXES.map(a=>'<div class="axis-row"><span class="axis-name">'+a.label+'</span><div class="axis-track"><div class="axis-fill" style="width:'+(diff[a.key]*20)+'%;background:'+h+'"></div></div></div>').join('');
+  document.getElementById('d-note').textContent=diff.note;
+}
+
+// Ref toggle
+document.querySelectorAll('.ref-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    refMode=b.dataset.ref;
+    document.querySelectorAll('.ref-btn').forEach(x=>x.classList.toggle('on',x.dataset.ref===refMode));
+    if(_currentDetail)renderDiff(_currentDetail,_currentHex);
+  });
+});
+
+function closeDetail(){
+  document.getElementById('detail').classList.remove('open');
+  if(ak){lineOn(ak,false);const p=document.getElementById('n-'+ak);if(p)nodeSel(p,false);ak=null}
+  const sl=document.getElementById('sat-layer');
+  sl.querySelectorAll('.sat.sel').forEach(x=>x.classList.remove('sel'));
+  sl.querySelectorAll('.sat-line.on').forEach(x=>x.classList.remove('on'));
+  document.getElementById('hint').classList.remove('hid');
+}
+
+/* ── Search & Filter ── */
+function matchKeys(){
+  return Object.keys(D).filter(k=>{
+    const d=D[k];
+    if(af!=='all'&&d.filter!==af)return false;
+    if(st){
+      // Search name, arabic, tags — NOT group
+      const hay=[d.name,d.arabic,...(d.tags||[])].join(' ').toLowerCase();
+      if(hay.includes(st))return true;
+      // Search satellites
+      if(d.satellites){
+        for(const s of d.satellites){
+          const sh=[s.name,s.arabic,...(s.tags||[])].join(' ').toLowerCase();
+          if(sh.includes(st))return true;
+        }
+      }
+      return false;
+    }
+    return true;
+  });
+}
+
+function findSatMatch(st){
+  for(const k of Object.keys(D)){
+    const d=D[k];if(!d.satellites)continue;
+    for(const s of d.satellites){
+      const h=[s.name,s.arabic,...(s.tags||[])].join(' ').toLowerCase();
+      if(h.includes(st))return{parentKey:k,sat:s};
+    }
+  }
+  return null;
+}
+
+function applyF(){
+  const m=matchKeys();
+  if(ak&&!m.includes(ak))closeDetail();
+  document.querySelectorAll('.dnode').forEach(g=>g.classList.toggle('dim',!m.includes(g.dataset.key)));
+  document.querySelectorAll('.dline').forEach(l=>l.classList.toggle('dim',!m.includes(l.id.replace('l-',''))));
+
+  if(m.length===1&&st){
+    const k=m[0],n=document.getElementById('n-'+k);
+    if(n&&ak!==k){
+      if(ak)closeDetail();
+      ak=k;doRip(n);nodeSel(n,true);lineOn(k,true);
+      // Check if satellite matched
+      const sm=findSatMatch(st);
+      if(sm&&sm.parentKey===k){
+        expandGroup(k);
+        showDetail(sm.sat,D[k].hex);
+      }else{
+        showDetail(D[k],D[k].hex);
+        if(D[k].expandable)expandGroup(k);
+      }
+    }
+  }else if(st){
+    // Check if a satellite matched within a visible parent
+    const sm=findSatMatch(st);
+    if(sm&&m.includes(sm.parentKey)){
+      expandGroup(sm.parentKey);
+    }
+  }
+}
+
+/* ── Events ── */
+document.querySelectorAll('.dnode').forEach(g=>{
+  g.addEventListener('click',function(e){
+    e.stopPropagation();if(this.classList.contains('dim'))return;
+    const k=this.dataset.key;
+    this.classList.add('pop');setTimeout(()=>this.classList.remove('pop'),180);
+    haptic();
+    if(ak===k){
+      if(expandedKeys.has(k)){collapseGroup(k);closeDetail()}
+      else closeDetail();
+      return;
+    }
+    if(ak){lineOn(ak,false);const p=document.getElementById('n-'+ak);if(p)nodeSel(p,false)}
+    const sl=document.getElementById('sat-layer');
+    sl.querySelectorAll('.sat.sel').forEach(x=>x.classList.remove('sel'));
+    sl.querySelectorAll('.sat-line.on').forEach(x=>x.classList.remove('on'));
+    ak=k;doRip(this);nodeSel(this,true);lineOn(k,true);
+    const d=D[k];
+    showDetail(d,d.hex);
+    if(d.expandable)expandGroup(k);
+  });
+});
+
+document.getElementById('d-close').addEventListener('click',e=>{e.stopPropagation();collapseGroup();closeDetail()});
+document.getElementById('cv').addEventListener('click',e=>{if(!e.target.closest('.dnode')&&!e.target.closest('.sat')){collapseGroup();closeDetail()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){collapseGroup();closeDetail()}});
+
+document.getElementById('info-btn').addEventListener('click',()=>document.getElementById('info-overlay').classList.add('open'));
+document.getElementById('info-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+
+document.getElementById('search-input').addEventListener('input',e=>{
+  st=e.target.value.trim().toLowerCase();
+  document.getElementById('search-clear').style.display=st?'block':'none';
+  clearTimeout(stm);stm=setTimeout(applyF,150);
+});
+document.getElementById('search-clear').addEventListener('click',()=>{
+  const i=document.getElementById('search-input');i.value='';st='';
+  document.getElementById('search-clear').style.display='none';collapseGroup();applyF();i.focus();
+});
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');af=b.dataset.f;collapseGroup();applyF();
+  });
+});
+
+/* ── Zoom ── */
+const FULL_VB=[-120,-80,1200,880];
+let zoomOn=true,zoomAnim=null,curVB=[...FULL_VB];
+const svg=document.getElementById('cv');
+const zBtn=document.getElementById('zoom-btn');
+
+function lerpVB(from,to,dur,cb){
+  if(zoomAnim)cancelAnimationFrame(zoomAnim);
+  const s=performance.now();
+  (function tick(now){
+    const t=Math.min((now-s)/dur,1);
+    const e=t<.5?2*t*t:(1-Math.pow(-2*t+2,2)/2); // easeInOut
+    curVB=from.map((v,i)=>v+(to[i]-v)*e);
+    svg.setAttribute('viewBox',curVB.map(v=>Math.round(v*10)/10).join(' '));
+    if(t<1)zoomAnim=requestAnimationFrame(tick);
+    else{zoomAnim=null;if(cb)cb();}
+  })(s);
+}
+
+function zoomTo(cx,cy,scale){
+  const w=960/scale,h=720/scale;
+  lerpVB([...curVB],[cx-w/2,cy-h/2,w,h],400);
+}
+function zoomReset(){lerpVB([...curVB],[...FULL_VB],400)}
+
+zBtn.addEventListener('click',()=>{
+  zoomOn=!zoomOn;
+  zBtn.classList.toggle('on',zoomOn);
+  zBtn.innerHTML=zoomOn?'&#x2296;':'&#x2295;';
+  if(!zoomOn)zoomReset();
+});
+
+/* ── Expand All ── */
+const eaBtn=document.getElementById('expand-all-btn');
+const expandableKeys=Object.keys(D).filter(k=>D[k]&&D[k].satellites&&D[k].satellites.length);
+
+function expandAll(){
+  // Turn zoom off if on
+  if(zoomOn){zoomOn=false;zBtn.classList.remove('on');zBtn.innerHTML='&#x2295;';zoomReset();}
+  collapseGroup(); // clear any existing
+  const allPositions=computeAllSatPositions();
+  for(const key of expandableKeys){
+    const d=D[key];if(!d)continue;
+    expandedKeys.add(key);
+    renderSatGroup(key,allPositions[key],d);
+  }
+  eaBtn.classList.add('on');
+  eaBtn.innerHTML='&#x29C8;';
+}
+
+function collapseAll(){
+  collapseGroup();
+  eaBtn.classList.remove('on');
+  eaBtn.innerHTML='&#x29C9;';
+}
+
+eaBtn.addEventListener('click',()=>{
+  if(expandedKeys.size===expandableKeys.length) collapseAll();
+  else expandAll();
+});
+
+// Hook into node click for zoom
+document.querySelectorAll('.dnode').forEach(g=>{
+  g.addEventListener('click',function(){
+    if(!zoomOn)return;
+    const k=this.dataset.key;
+    const d=D[k];if(!d)return;
+    if(d.expandable){
+      // After expansion, compute bounding box of all satellite positions + parent
+      setTimeout(()=>{
+        if(!expandedKeys.has(k))return;
+        const positions=getSatPositions(k,d.cx,d.cy,d.satellites.length);
+        const allX=[d.cx,...positions.map(p=>p.x)];
+        const allY=[d.cy,...positions.map(p=>p.y)];
+        const minX=Math.min(...allX)-80, maxX=Math.max(...allX)+80;
+        const minY=Math.min(...allY)-60, maxY=Math.max(...allY)+60;
+        const bw=maxX-minX, bh=maxY-minY;
+        // Ensure minimum zoom area so it's not too tight
+        const zw=Math.max(bw,320), zh=Math.max(bh,240);
+        const cx2=(minX+maxX)/2, cy2=(minY+maxY)/2;
+        lerpVB([...curVB],[cx2-zw/2,cy2-zh/2,zw,zh],400);
+      },80);
+    }else{
+      zoomTo(d.cx,d.cy,2);
+    }
+  });
+});
+
+// Zoom out on empty click, Escape, or close
+const origCvClick=svg.onclick;
+svg.addEventListener('click',e=>{
+  if(!e.target.closest('.dnode')&&!e.target.closest('.sat')){zoomReset()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')zoomReset()});
+document.getElementById('d-close').addEventListener('click',()=>zoomReset());
+
+/* ── Iframe detection — hide search, feedback, embed btn when embedded ── */
+if(window.self!==window.top)document.body.classList.add('in-iframe');
+
+/* ── Feedback modal ── */
+document.getElementById('feedback-btn').addEventListener('click',()=>document.getElementById('feedback-overlay').classList.add('open'));
+document.getElementById('feedback-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+
+/* ── Embed modal ── */
+document.getElementById('embed-btn').addEventListener('click',()=>{
+  const url=window.location.href.split('#')[0].split('?')[0];
+  document.getElementById('embed-code').value='<iframe src="'+url+'" width="100%" height="750" style="border:none;border-radius:12px;background:#1c1a17" title="Arabic Dialect Map" loading="lazy"><\/iframe>';
+  document.getElementById('embed-overlay').classList.add('open');
+});
+document.getElementById('embed-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+document.getElementById('embed-copy').addEventListener('click',function(){
+  const ta=document.getElementById('embed-code'),btn=this;
+  function flash(){btn.textContent='Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy code';btn.classList.remove('copied')},2200)}
+  if(navigator.clipboard){navigator.clipboard.writeText(ta.value).then(flash,()=>{ta.select();ta.setSelectionRange(0,99999);document.execCommand('copy');flash()})}
+  else{ta.select();ta.setSelectionRange(0,99999);document.execCommand('copy');flash()}
+});
+
+/* ── Close all modals on Escape ── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('feedback-overlay').classList.remove('open');
+    document.getElementById('embed-overlay').classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
