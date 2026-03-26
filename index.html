@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Arabic Dialect Map</title>
+<meta name="description" content="An interactive guide to Arabic dialects — how they relate to each other, and how difficult each is relative to Modern Standard Arabic and Qur'anic Arabic.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -14,7 +15,7 @@
   --ar:'Noto Naskh Arabic','Geeza Pro','Traditional Arabic','Arabic Typesetting','Amiri',serif;
   --bg:#1c1a17;--bg2:#242220;--bg3:#2e2b28;
   --card:#282522;--card-b:#3a3632;
-  --tx:#e8e0d4;--tx2:#b0a898;--tx3:#7a7268;
+  --tx:#e8e0d4;--tx2:#b0a898;--tx3:#8a8278;
   --purple:#b4a0e8;--purple-d:#3a3050;
   --green:#7cc8a0;--green-d:#263830;
   --amber:#d4aa60;--amber-d:#38301c;
@@ -214,6 +215,14 @@ body.in-iframe .search-wrap,
 body.in-iframe #search-clear,
 body.in-iframe #embed-btn{display:none!important}
 
+/* ── Focus ── */
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+button:focus-visible{outline-offset:1px}
+.dnode:focus-visible rect:first-of-type,.sat:focus-visible rect{filter:brightness(1.3);stroke-width:2.5}
+.ref-btn:focus-visible,.fbtn:focus-visible{outline-offset:0}
+#no-results{display:none;text-align:center;font-size:12px;color:var(--tx3);padding:8px 0}
+
 /* ── Rotate hint ── */
 #rotate-hint{
   display:none;text-align:center;font-size:11.5px;color:var(--tx3);
@@ -348,12 +357,12 @@ body.in-iframe #embed-btn{display:none!important}
 </head>
 <body>
 
-<div id="wrap">
-<button id="embed-btn" title="Embed this map">&lt;/&gt;</button>
-<button id="expand-all-btn" title="Expand / collapse all sub-dialects">&#x29C9;</button>
-<button id="zoom-btn" class="on" title="Toggle auto-zoom on click">&#x2296;</button>
-<button id="info-btn" title="About this diagram">i</button>
-<div id="info-overlay"><div id="info-modal">
+<main id="wrap">
+<button id="embed-btn" title="Embed this map" aria-label="Embed this map">&lt;/&gt;</button>
+<button id="expand-all-btn" title="Expand / collapse all sub-dialects" aria-label="Expand all sub-dialects" aria-pressed="false">&#x29C9;</button>
+<button id="zoom-btn" class="on" title="Toggle auto-zoom on click" aria-label="Toggle auto-zoom" aria-pressed="true">&#x2296;</button>
+<button id="info-btn" title="About this diagram" aria-label="About this map">i</button>
+<div id="info-overlay" role="dialog" aria-modal="true" aria-label="About this map"><div id="info-modal">
   <h3>About this map</h3>
   <p>Arabic has dozens of spoken dialects &mdash; some close enough to understand on day one, others so different they feel like separate languages. This map arranges them by how much they diverge from Modern Standard Arabic (Fusha) at the center.</p>
   <p>Click any dialect to see its profile. Nodes with a <b>+</b> expand into sub-dialects.</p>
@@ -367,28 +376,28 @@ body.in-iframe #embed-btn{display:none!important}
 </div>
 
 <div id="controls">
-  <div class="search-wrap">
-    <input id="search-input" type="text" placeholder="Search dialects..." inputmode="search" autocomplete="off">
+  <div class="search-wrap" role="search" aria-label="Search dialects">
+    <input id="search-input" type="text" placeholder="Search dialects..." inputmode="search" autocomplete="off" autocapitalize="none" spellcheck="false">
     <button id="search-clear" aria-label="Clear">&times;</button>
   </div>
-  <div class="fbtn-row">
-    <button class="fbtn on" data-f="all">All</button>
-    <button class="fbtn" data-f="classical">Classical</button>
-    <button class="fbtn" data-f="eastern">Eastern</button>
-    <button class="fbtn" data-f="peninsula">Peninsula</button>
-    <button class="fbtn" data-f="maghreb">Maghreb</button>
-  </div>
+  <nav class="fbtn-row" aria-label="Filter by dialect region">
+    <button class="fbtn on" data-f="all" aria-selected="true">All</button>
+    <button class="fbtn" data-f="classical" aria-selected="false">Classical</button>
+    <button class="fbtn" data-f="eastern" aria-selected="false">Eastern</button>
+    <button class="fbtn" data-f="peninsula" aria-selected="false">Peninsula</button>
+    <button class="fbtn" data-f="maghreb" aria-selected="false">Maghreb</button>
+  </nav>
 </div>
 
 <div id="svg-wrap">
-<svg id="cv" width="100%" viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg">
+<svg id="cv" width="100%" viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive map of Arabic dialects arranged by divergence from Modern Standard Arabic">
 <defs>
   <radialGradient id="glow" cx="480" cy="330" r="360" gradientUnits="userSpaceOnUse">
     <stop offset="0%" stop-color="#3a3428" stop-opacity=".5"/>
     <stop offset="100%" stop-color="#242220" stop-opacity="0"/>
   </radialGradient>
 </defs>
-<rect width="960" height="720" fill="url(#glow)" rx="12"/>
+<rect width="960" height="720" fill="url(#glow)" rx="12" aria-hidden="true"/>
 
 <g id="lines">
   <path id="l-quranic"   class="dline" d="M480,380 C480,420 480,460 480,495" stroke="#8070b8" data-sw="3" data-op=".4" style="stroke-width:3;opacity:.4"/>
@@ -526,7 +535,7 @@ body.in-iframe #embed-btn{display:none!important}
 </g>
 
 <!-- Legend -->
-<g opacity=".5">
+<g opacity=".5" aria-hidden="true">
   <circle cx="858" cy="618" r="4" fill="#8070b8"/><text x="868" y="621" font-size="9" fill="#7a7268" font-family="var(--font)">Classical</text>
   <circle cx="858" cy="634" r="4" fill="#5caa84"/><text x="868" y="637" font-size="9" fill="#7a7268" font-family="var(--font)">Egyptian + Levantine</text>
   <circle cx="858" cy="650" r="4" fill="#5090c0"/><text x="868" y="653" font-size="9" fill="#7a7268" font-family="var(--font)">Iraqi</text>
@@ -542,12 +551,13 @@ body.in-iframe #embed-btn{display:none!important}
 <div id="hint">Tap any dialect to explore · nodes with + expand into sub-dialects</div>
 
 <div id="sheet-backdrop"></div>
-<div id="detail">
-  <div id="d-head"><div id="d-left"><div id="d-arabic"></div><div id="d-name"></div><div id="d-region"></div></div><button id="d-close">&times;</button></div>
+<div id="no-results">No dialects match your search</div>
+<div id="detail" aria-live="polite">
+  <div id="d-head"><div id="d-left"><div id="d-arabic"></div><div id="d-name"></div><div id="d-region"></div></div><button id="d-close" aria-label="Close dialect details">&times;</button></div>
   <div id="d-meta"><span class="d-badge" id="d-badge"></span><div class="d-dots" id="d-dots"></div><span class="d-dlabel" id="d-dlabel"></span></div>
-  <div id="d-ref">
-    <button class="ref-btn" data-ref="quranic">vs Qurʾanic</button>
-    <button class="ref-btn on" data-ref="msa">vs MSA</button>
+  <div id="d-ref" role="tablist" aria-label="Reference dialect for scoring">
+    <button class="ref-btn" data-ref="quranic" role="tab" aria-selected="false">vs Qurʾanic</button>
+    <button class="ref-btn on" data-ref="msa" role="tab" aria-selected="true">vs MSA</button>
   </div>
   <div id="d-axes"></div>
   <p id="d-note"></p>
@@ -556,11 +566,11 @@ body.in-iframe #embed-btn{display:none!important}
   <div id="d-intel" style="display:none"><div id="d-intel-label">Closest dialects</div><div id="d-intel-body"></div></div>
   <p id="d-tip"></p>
 </div>
-</div>
+</main>
 
-<button id="feedback-btn">Feedback</button>
+<button id="feedback-btn" aria-label="Send feedback">Feedback</button>
 
-<div id="feedback-overlay"><div id="feedback-modal">
+<div id="feedback-overlay" role="dialog" aria-modal="true" aria-label="Feedback"><div id="feedback-modal">
   <h3>Hey thanks for visiting!</h3>
   <p>Frankly, one of my goals with this project was to get an understanding of how the many Arabic dialects relate to Qur'anic Arabic and Modern Standard Arabic. I imagine so many people start with those two and want to talk to more and more people across the Arabic-speaking world. It's honestly so cool how diverse the dialects and such of Arabic are! I truly hope you found it as fascinating as I did and gain something from this site!</p>
   <p>I largely put this site together with Claude Code, so honestly, there might be some mistakes or areas where the information is iffy. Please let me know if there's any bugs or any inaccurate or questionable information! You can email me at <a href="mailto:rafan.quader@sjsu.edu">rafan.quader@sjsu.edu</a>!</p>
@@ -570,10 +580,10 @@ body.in-iframe #embed-btn{display:none!important}
   <button class="cm" style="margin-top:14px" onclick="document.getElementById('feedback-overlay').classList.remove('open')">Close</button>
 </div></div>
 
-<div id="embed-overlay"><div id="embed-modal">
+<div id="embed-overlay" role="dialog" aria-modal="true" aria-label="Embed this map"><div id="embed-modal">
   <h3>Embed this map</h3>
   <p>Copy the code below and paste it into any webpage. The search bar and feedback button are automatically hidden in embeds.</p>
-  <textarea id="embed-code" rows="3" readonly spellcheck="false"></textarea>
+  <textarea id="embed-code" rows="3" readonly spellcheck="false" aria-label="Embed code"></textarea>
   <p id="embed-note">The embed automatically adapts to the container width. A height of 700&ndash;800px works well.</p>
   <div class="em-actions">
     <button id="embed-copy">Copy code</button>
@@ -1229,6 +1239,125 @@ document.addEventListener('keydown',e=>{
     document.getElementById('embed-overlay').classList.remove('open');
   }
 });
+
+/* ── Accessibility enhancements ── */
+(function(){
+  // Tabindex + aria-label + keyboard activation + lang="ar" + aria-hidden decorative on all nodes
+  document.querySelectorAll('.dnode').forEach(g=>{
+    const k=g.dataset.key,d=D[k];if(!d)return;
+    g.setAttribute('tabindex','0');
+    g.setAttribute('role','button');
+    g.setAttribute('aria-label',d.name+(d.expandable?' (expandable)':''));
+    // lang="ar" on Arabic text
+    g.querySelectorAll('text[font-family*="ar"]').forEach(t=>t.setAttribute('xml:lang','ar'));
+    // aria-hidden on decorative circles
+    g.querySelectorAll('.rip,.bre').forEach(c=>c.setAttribute('aria-hidden','true'));
+    // Keyboard Enter/Space activation
+    g.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();g.click()}
+    });
+  });
+
+  // Sync aria-pressed on toggle buttons
+  const eaBtn=document.getElementById('expand-all-btn');
+  const zBtn=document.getElementById('zoom-btn');
+  new MutationObserver(()=>eaBtn.setAttribute('aria-pressed',eaBtn.classList.contains('on'))).observe(eaBtn,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(()=>zBtn.setAttribute('aria-pressed',zBtn.classList.contains('on'))).observe(zBtn,{attributes:true,attributeFilter:['class']});
+
+  // Sync aria-selected on filter buttons
+  document.querySelectorAll('.fbtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.fbtn').forEach(x=>x.setAttribute('aria-selected',x.classList.contains('on')));
+    });
+  });
+
+  // Sync aria-selected on ref tabs
+  document.querySelectorAll('.ref-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.ref-btn').forEach(x=>x.setAttribute('aria-selected',x.classList.contains('on')));
+    });
+  });
+
+  // Screen reader text for difficulty dots
+  const origRenderDiff=renderDiff;
+  renderDiff=function(d,hex){
+    origRenderDiff(d,hex);
+    const dl=document.getElementById('d-dlabel');
+    if(dl)dl.setAttribute('aria-label',dl.textContent);
+  };
+
+  // Focus management: move focus to detail on open, return on close
+  let lastFocused=null;
+  const origShow=showDetail;
+  showDetail=function(d,hex){
+    lastFocused=document.activeElement;
+    origShow(d,hex);
+    const det=document.getElementById('detail');
+    det.setAttribute('tabindex','-1');
+    setTimeout(()=>det.focus({preventScroll:true}),100);
+  };
+  const origClose=closeDetail;
+  closeDetail=function(){
+    origClose();
+    if(lastFocused&&lastFocused.focus)setTimeout(()=>lastFocused.focus(),100);
+    lastFocused=null;
+  };
+
+  // / key to focus search
+  document.addEventListener('keydown',e=>{
+    if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+      e.preventDefault();document.getElementById('search-input').focus();
+    }
+  });
+
+  // Enter in search selects first visible match
+  document.getElementById('search-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const vis=document.querySelector('.dnode:not(.dim)');
+      if(vis)vis.click();
+    }
+  });
+
+  // No-results indicator
+  const noRes=document.getElementById('no-results');
+  const origApplyF=applyF;
+  applyF=function(){
+    origApplyF();
+    const m=matchKeys();
+    noRes.style.display=st&&m.length===0?'block':'none';
+  };
+
+  // Focus trap in modals
+  function trapFocus(overlay){
+    overlay.addEventListener('keydown',e=>{
+      if(e.key!=='Tab')return;
+      const focusable=overlay.querySelectorAll('button,input,textarea,a,[tabindex]:not([tabindex="-1"])');
+      if(!focusable.length)return;
+      const first=focusable[0],last=focusable[focusable.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+    });
+  }
+  trapFocus(document.getElementById('info-overlay'));
+  trapFocus(document.getElementById('feedback-overlay'));
+  trapFocus(document.getElementById('embed-overlay'));
+
+  // Tabindex on dynamically created satellite nodes
+  const satLayer=document.getElementById('sat-layer');
+  new MutationObserver(()=>{
+    satLayer.querySelectorAll('.sat:not([tabindex])').forEach(g=>{
+      g.setAttribute('tabindex','0');g.setAttribute('role','button');
+      const k=g.dataset.satKey,pk=g.dataset.satParent;
+      const pd=D[pk];if(pd&&pd.satellites){const s=pd.satellites.find(x=>x.key===k);if(s)g.setAttribute('aria-label',s.name)}
+      g.querySelectorAll('text[font-family*="ar"]').forEach(t=>t.setAttribute('xml:lang','ar'));
+      g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();g.click()}});
+    });
+  }).observe(satLayer,{childList:true});
+
+  // No horizontal scroll check — constrain SVG wrap
+  document.getElementById('svg-wrap').style.overflowX='hidden';
+})();
 
 /* ── Rotate hint ── */
 (function(){
