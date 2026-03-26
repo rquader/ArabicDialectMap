@@ -214,50 +214,117 @@ body.in-iframe .search-wrap,
 body.in-iframe #search-clear,
 body.in-iframe #embed-btn{display:none!important}
 
+/* ── Reduced motion ── */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+
+/* ── Mobile ── */
 @media(max-width:640px){
-  #wrap{padding:16px 12px 82px}
+  #wrap{padding:14px 10px 20px}
+  #title-area{text-align:left;padding-right:100px;margin-bottom:10px}
   #title-area h1{font-size:18px}
-  #title-area p{font-size:10px;padding-right:0}
-  #title-area{padding-right:140px;margin-bottom:12px}
-  #embed-btn{right:112px;top:18px;width:26px;height:26px;font-size:9px}
-  #expand-all-btn{right:80px;top:18px;width:26px;height:26px;font-size:12px}
-  #zoom-btn{right:48px;top:18px;width:26px;height:26px;font-size:12px}
-  #info-btn{right:16px;top:18px;width:26px;height:26px;font-size:11px}
-  #controls{gap:6px;margin-bottom:10px}
+  #title-area p{font-size:10px}
+  #embed-btn{display:none}
+  #expand-all-btn{right:64px;top:16px;width:30px;height:30px;font-size:14px}
+  #zoom-btn{right:34px;top:16px;width:30px;height:30px;font-size:14px}
+  #info-btn{right:4px;top:16px;width:30px;height:30px;font-size:13px}
+  #controls{gap:6px;margin-bottom:8px}
   .search-wrap{flex:none;width:100%;min-width:0}
+  #search-input{padding:11px 34px 11px 14px;font-size:14px;border-radius:24px}
   .fbtn-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;width:100%;padding-bottom:2px;scrollbar-width:none}
   .fbtn-row::-webkit-scrollbar{display:none}
-  .fbtn{flex-shrink:0;font-size:11px;padding:6px 11px}
-  #svg-wrap{border-radius:12px;padding:3px;margin-bottom:10px}
-  #detail.open{padding:16px 14px 16px;max-height:none}
-  #d-arabic{font-size:22px}
-  #d-name{font-size:12px}
+  .fbtn{flex-shrink:0;font-size:11.5px;padding:7px 14px;border-radius:20px}
+  #svg-wrap{border-radius:10px;padding:2px;margin-bottom:6px}
+  #svg-wrap::after{opacity:.15}
+  #hint{font-size:11px;padding:4px 0 2px}
+
+  /* ── Bottom sheet ── */
+  #detail{
+    position:fixed;bottom:0;left:0;right:0;z-index:60;
+    background:var(--card);
+    border:none;border-top:1px solid var(--card-b);
+    border-radius:20px 20px 0 0;
+    max-height:0;opacity:0;
+    transform:translateY(100%);
+    transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .25s,max-height 0s .35s;
+    overflow:hidden;
+    box-shadow:0 -8px 40px rgba(0,0,0,.5);
+    padding:0;
+  }
+  #detail.open{
+    max-height:70vh;opacity:1;
+    transform:translateY(0);
+    transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .25s,max-height 0s;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:6px 18px 28px;
+  }
+  #detail.open::before{
+    content:'';display:block;width:36px;height:4px;border-radius:2px;
+    background:var(--card-b);margin:0 auto 10px;flex-shrink:0;
+  }
+  #d-close{width:36px;height:36px;font-size:18px;border-radius:10px}
+  #d-arabic{font-size:24px}
+  #d-name{font-size:13px}
+  #d-region{font-size:12px}
+  .ref-btn{padding:6px 14px;font-size:12px}
   #d-axes{grid-template-columns:1fr}
-  #d-phrase{padding:10px 12px}
-  #d-body{font-size:12.5px}
-  #d-tip{font-size:11.5px}
-  #d-note{font-size:12.5px}
-  #hint{font-size:11px;padding:6px 0 2px}
-  #feedback-btn{bottom:14px;right:14px;padding:8px 14px 8px 11px;font-size:11.5px}
-  #feedback-modal,#embed-modal{width:92%;border-radius:16px}
-  #feedback-modal{padding:22px 20px 18px}
-  #feedback-modal h3{font-size:15px}
-  #feedback-modal p{font-size:13px}
-  #embed-modal{padding:20px 18px 16px}
+  .axis-name{font-size:11.5px;width:78px}
+  .axis-track{height:6px}
+  #d-note{font-size:13px}
+  #d-phrase{padding:12px 14px}
+  #d-phrase-ar{font-size:22px}
+  #d-phrase-tr{font-size:13px}
+  #d-body{font-size:13px}
+  #d-tip{font-size:12px}
+  .intel-level{font-size:11px;min-width:68px}
+  .intel-items{font-size:12.5px}
+
+  /* ── Sheet backdrop ── */
+  #sheet-backdrop{
+    display:none;position:fixed;inset:0;z-index:55;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+    transition:opacity .3s;opacity:0;
+  }
+  #sheet-backdrop.open{display:block;opacity:1}
+
+  /* ── Sheet accent border ── */
+  #detail.open{border-top-width:3px}
+
+  /* ── Feedback as bottom sheet ── */
+  #feedback-btn{bottom:14px;right:14px;padding:9px 15px 9px 12px;font-size:12px}
+  #feedback-overlay{align-items:flex-end}
+  #feedback-modal{width:100%;max-width:100%;border-radius:20px 20px 0 0;padding:6px 22px 32px;max-height:80vh}
+  #feedback-modal::before{content:'';display:block;width:36px;height:4px;border-radius:2px;background:var(--card-b);margin:0 auto 12px}
+
+  /* ── Info as bottom sheet ── */
+  #info-overlay{align-items:flex-end}
+  #info-modal{width:100%;max-width:100%;border-radius:20px 20px 0 0;padding:6px 22px 32px;max-height:80vh}
+  #info-modal::before{content:'';display:block;width:36px;height:4px;border-radius:2px;background:var(--card-b);margin:0 auto 12px}
+
+  /* ── Body scroll lock ── */
+  body.sheet-open{overflow:hidden;position:fixed;width:100%;touch-action:none}
 }
 @media(max-width:380px){
   #title-area h1{font-size:16px}
-  #title-area{padding-right:120px}
-  #embed-btn{display:none}
-  #expand-all-btn{right:64px}
-  #zoom-btn{right:36px}
-  #info-btn{right:8px}
+  #title-area p{display:none}
+  #title-area{padding-right:90px}
+  #expand-all-btn{right:56px}
+  #zoom-btn{right:28px}
+  #info-btn{right:0px}
+}
+@media(max-width:640px) and (orientation:landscape){
+  #detail.open{max-height:85vh}
+  #svg-wrap{max-height:50vh}
 }
 @supports(padding:env(safe-area-inset-bottom)){
   #feedback-btn{bottom:calc(20px + env(safe-area-inset-bottom))}
   @media(max-width:640px){
-    #wrap{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
     #feedback-btn{bottom:calc(14px + env(safe-area-inset-bottom))}
+    #detail.open{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+    #feedback-modal{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+    #info-modal{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
   }
 }
 </style>
@@ -456,6 +523,7 @@ body.in-iframe #embed-btn{display:none!important}
 
 <div id="hint">Tap any dialect to explore · nodes with + expand into sub-dialects</div>
 
+<div id="sheet-backdrop"></div>
 <div id="detail">
   <div id="d-head"><div id="d-left"><div id="d-arabic"></div><div id="d-name"></div><div id="d-region"></div></div><button id="d-close">&times;</button></div>
   <div id="d-meta"><span class="d-badge" id="d-badge"></span><div class="d-dots" id="d-dots"></div><span class="d-dlabel" id="d-dlabel"></span></div>
@@ -1143,6 +1211,102 @@ document.addEventListener('keydown',e=>{
     document.getElementById('embed-overlay').classList.remove('open');
   }
 });
+
+/* ── Mobile bottom sheet enhancements ── */
+(function(){
+  const isMobile=()=>window.innerWidth<=640;
+  const detail=document.getElementById('detail');
+  const backdrop=document.getElementById('sheet-backdrop');
+  const body=document.body;
+  let scrollY=0;
+
+  function sheetOpen(hex){
+    if(!isMobile())return;
+    // Accent color on top border
+    if(hex)detail.style.borderTopColor=hex;
+    // Backdrop
+    backdrop.classList.add('open');
+    // Lock body scroll — save position
+    scrollY=window.scrollY;
+    body.classList.add('sheet-open');
+    body.style.top=-scrollY+'px';
+    // Scroll detail to top
+    detail.scrollTop=0;
+  }
+
+  function sheetClose(){
+    if(!isMobile())return;
+    backdrop.classList.remove('open');
+    detail.style.borderTopColor='';
+    // Unlock body scroll — restore position
+    body.classList.remove('sheet-open');
+    body.style.top='';
+    window.scrollTo(0,scrollY);
+  }
+
+  // Backdrop tap to close
+  backdrop.addEventListener('click',()=>{collapseGroup();closeDetail()});
+
+  // Patch showDetail and closeDetail
+  const _origShow=showDetail;
+  showDetail=function(d,hex){
+    _origShow(d,hex);
+    sheetOpen(hex);
+  };
+  const _origClose=closeDetail;
+  closeDetail=function(){
+    _origClose();
+    sheetClose();
+  };
+
+  // Swipe down to dismiss
+  let touchStartY=0,touchDeltaY=0,dragging=false;
+  detail.addEventListener('touchstart',e=>{
+    if(!isMobile()||!detail.classList.contains('open'))return;
+    // Only start drag if at scroll top or touching the handle area
+    if(detail.scrollTop>5)return;
+    touchStartY=e.touches[0].clientY;
+    dragging=true;touchDeltaY=0;
+  },{passive:true});
+
+  detail.addEventListener('touchmove',e=>{
+    if(!dragging)return;
+    touchDeltaY=e.touches[0].clientY-touchStartY;
+    if(touchDeltaY<0){touchDeltaY=0;return}
+    // Move sheet down
+    detail.style.transition='none';
+    detail.style.transform='translateY('+touchDeltaY+'px)';
+    backdrop.style.opacity=Math.max(0,1-touchDeltaY/300);
+  },{passive:true});
+
+  detail.addEventListener('touchend',()=>{
+    if(!dragging)return;
+    dragging=false;
+    detail.style.transition='';
+    backdrop.style.opacity='';
+    if(touchDeltaY>100){
+      // Dismiss
+      collapseGroup();closeDetail();
+    }else{
+      // Snap back
+      detail.style.transform='';
+    }
+  },{passive:true});
+
+  // Android back button / browser back
+  window.addEventListener('popstate',()=>{
+    if(detail.classList.contains('open')){
+      collapseGroup();closeDetail();
+      history.pushState(null,'','');
+    }
+  });
+  // Push state when sheet opens so back button can close it
+  const _origShow2=showDetail;
+  showDetail=function(d,hex){
+    _origShow2(d,hex);
+    if(isMobile())history.pushState(null,'','');
+  };
+})();
 </script>
 </body>
 </html>
